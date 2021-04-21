@@ -1,0 +1,111 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using RiichiGang.Data;
+using RiichiGang.Domain;
+using RiichiGang.Service.InputModel;
+
+namespace RiichiGang.Service
+{
+    public class UserService
+    {
+        private ApplicationDbContext _context;
+
+        public UserService(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
+        public User GetById(Guid id)
+            => _context.Users.AsQueryable()
+                .SingleOrDefault(u => u.Id == id);
+
+        public User GetByUsername(string username)
+            => _context.Users.AsQueryable()
+                .SingleOrDefault(u => u.Username == username);
+
+        public User GetByEmail(string email)
+            => _context.Users.AsQueryable()
+                .SingleOrDefault(u => u.Email == email);
+
+        public IEnumerable<User> GetUsers(Func<User, bool> predicate)
+            => _context.Users.AsQueryable()
+                .Where(predicate)
+                .AsEnumerable();
+
+        public async Task<User> AddUserAsync(UserInputModel inputModel)
+        {
+            if (inputModel.Password != inputModel.PasswordConfirmation)
+                throw new ArgumentException("As senhas não batem");
+
+            if (_context.Users.AsQueryable().Any(u => u.Email == inputModel.Email))
+                throw new ArgumentException($"Email \"{inputModel.Email}\" já cadastrado");
+
+            if (_context.Users.AsQueryable().Any(u => u.Username == inputModel.Username))
+                throw new ArgumentException($"Nome de usuário \"{inputModel.Username}\" já cadastrado");
+
+            var passwordHash = BCrypt.Net.BCrypt.HashPassword(inputModel.Password);
+            var user = new User(
+                inputModel.Username,
+                inputModel.Email,
+                passwordHash);
+
+            await _context.AddAsync(user);
+            await _context.SaveChangesAsync();
+
+            return user;
+        }
+
+        public async Task<User> UpdateUserAsync(User user, UserInputModel inputModel)
+        {
+            if (user is null)
+                throw new ArgumentNullException("Usuário não pode ser nulo");
+
+            if (!string.IsNullOrWhiteSpace(inputModel.Username))
+            {
+                if (_context.Users.AsQueryable().Any(u => u.Username == inputModel.Username))
+                    throw new ArgumentException($"Nome de usuário \"{inputModel.Username}\" já cadastrado");
+
+                user.SetUsername(inputModel.Username);
+            }
+
+            if (!string.IsNullOrWhiteSpace(inputModel.Email))
+            {
+                if (_context.Users.AsQueryable().Any(u => u.Email == inputModel.Email))
+                    throw new ArgumentException($"Email \"{inputModel.Email}\" já cadastrado");
+
+                user.SetEmail(inputModel.Email);
+            }
+
+            if (!string.IsNullOrWhiteSpace(inputModel.Email))
+            {
+                if (_context.Users.AsQueryable().Any(u => u.Email == inputModel.Email))
+                    throw new ArgumentException($"Email \"{inputModel.Email}\" já cadastrado");
+
+                user.SetEmail(inputModel.Email);
+            }
+
+            if (!string.IsNullOrWhiteSpace(inputModel.Password))
+            {
+                if (inputModel.Password != inputModel.PasswordConfirmation)
+                    throw new ArgumentException("As senhas não batem");
+
+                var passwordHash = BCrypt.Net.BCrypt.HashPassword(inputModel.Password);
+                user.SetPasswordHash(passwordHash);
+            }
+
+            _context.Update(user);
+            await _context.SaveChangesAsync();
+
+            return user;
+        }
+
+        public async Task DeleteUserAsync(User user)
+        {
+            _context.Remove(user);
+            await _context.SaveChangesAsync();
+        }
+    }
+}
