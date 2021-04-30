@@ -51,6 +51,14 @@ namespace RiichiGang.WebApi
             services.AddScoped<UserService>();
 
             // Add ASP.NET Core Services
+            services.AddCors(options =>
+            {
+                options.AddPolicy("any", builder =>
+                {
+                    builder.AllowAnyOrigin();
+                    builder.AllowAnyHeader();
+                });
+            });
             services.AddControllers();
 
             var key = Encoding.UTF8.GetBytes(authSettings.Secret);
@@ -124,6 +132,8 @@ namespace RiichiGang.WebApi
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors("any");
 
             app.UseAuthentication();
             app.UseAuthorization();
