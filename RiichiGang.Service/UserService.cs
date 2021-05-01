@@ -18,20 +18,36 @@ namespace RiichiGang.Service
             _context = context;
         }
 
-        public User GetById(Guid id)
+        public User GetById(int id)
             => _context.Users.AsQueryable()
+                .Include(u => u.OwnedClubs)
+                .Include(u => u.Memberships)
+                .Include(u => u.Tournaments)
+                .Include(u => u.Notifications)
                 .SingleOrDefault(u => u.Id == id);
 
         public User GetByUsername(string username)
             => _context.Users.AsQueryable()
+                .Include(u => u.OwnedClubs)
+                .Include(u => u.Memberships)
+                .Include(u => u.Tournaments)
+                .Include(u => u.Notifications)
                 .SingleOrDefault(u => u.Username == username);
 
         public User GetByEmail(string email)
             => _context.Users.AsQueryable()
+                .Include(u => u.OwnedClubs)
+                .Include(u => u.Memberships)
+                .Include(u => u.Tournaments)
+                .Include(u => u.Notifications)
                 .SingleOrDefault(u => u.Email == email);
 
         public IEnumerable<User> GetUsers(Func<User, bool> predicate)
             => _context.Users.AsQueryable()
+                .Include(u => u.OwnedClubs)
+                .Include(u => u.Memberships)
+                .Include(u => u.Tournaments)
+                .Include(u => u.Notifications)
                 .Where(predicate)
                 .AsEnumerable();
 

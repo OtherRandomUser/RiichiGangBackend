@@ -6,6 +6,7 @@ namespace RiichiGang.Domain
         public int TotalRounds { get; set; }
         public int FirstPlaces { get; set; }
         public int SecondPlaces { get; set; }
+        public int ThirdPlaces { get; set; }
         public int FourthPlaces { get; set; }
         public int TotalBusted { get; set; }
         public int WinRounds { get; set; }
@@ -20,6 +21,7 @@ namespace RiichiGang.Domain
             TotalRounds = 0;
             FirstPlaces = 0;
             SecondPlaces = 0;
+            ThirdPlaces = 0;
             FourthPlaces = 0;
             TotalBusted = 0;
             WinRounds = 0;

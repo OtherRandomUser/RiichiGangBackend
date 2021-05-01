@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace RiichiGang.Domain
 {
@@ -8,6 +9,11 @@ namespace RiichiGang.Domain
         public string Email { get; protected set; }
         public string PasswordHash { get; protected set; }
         public Stats Stats { get; protected set; }
+
+        public IEnumerable<Club> OwnedClubs { get; protected set; }
+        public IEnumerable<Membership> Memberships { get; protected set; }
+        public IEnumerable<Tournament> Tournaments { get; protected set; }
+        public IEnumerable<Notification> Notifications { get; protected set; }
 
         private User()
         {

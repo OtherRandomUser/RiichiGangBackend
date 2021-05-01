@@ -9,7 +9,7 @@ namespace RiichiGang.Domain
         public string Contact { get; set; }
 
         public User Owner { get; protected set; }
-        public Guid OwnerId { get; protected set; }
+        public int OwnerId { get; protected set; }
 
         private Club()
         {

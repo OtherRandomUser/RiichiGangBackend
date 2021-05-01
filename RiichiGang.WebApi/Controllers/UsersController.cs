@@ -68,7 +68,7 @@ namespace RiichiGang.WebApi.Controllers
 
         [HttpDelete("{id}")]
         [Authorize]
-        public Task<ActionResult> DeleteAsync(Guid id)
+        public Task<ActionResult> DeleteAsync(int id)
             => ExecuteAsync(async () =>
             {
                 var user = _userService.GetById(id);
@@ -82,7 +82,7 @@ namespace RiichiGang.WebApi.Controllers
 
         [HttpGet("{id}")]
         [Authorize]
-        public Task<ActionResult> GetAsync(Guid id)
+        public Task<ActionResult> GetAsync(int id)
             => ExecuteAsync(() =>
             {
                 var user = _userService.GetById(id);
