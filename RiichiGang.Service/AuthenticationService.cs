@@ -20,11 +20,6 @@ namespace RiichiGang.Service
 
         public string Authenticate(User user, string password)
         {
-            // var passwordHash = BCrypt.Net.BCrypt.HashPassword(password);
-
-            // if (user.PasswordHash != passwordHash)
-            //     throw new ArgumentException("Senha invalida");
-
             if (!BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
                 throw new ArgumentException("Senha invalida");
 

@@ -1,10 +1,12 @@
 using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using RiichiGang.Service;
 using RiichiGang.Service.InputModel;
+using RiichiGang.WebApi.Extensios;
 using RiichiGang.WebApi.InputModels;
 using RiichiGang.WebApi.ViewModel;
 
@@ -57,7 +59,8 @@ namespace RiichiGang.WebApi.Controllers
         public Task<ActionResult<UserViewModel>> UpdateAsync([FromBody] UserInputModel inputModel)
             => ExecuteAsync<UserViewModel>(async () =>
             {
-                var user = _userService.GetByEmail(inputModel.Email);
+                var username = User.Username();
+                var user = _userService.GetByUsername(username);
 
                 if (user is null)
                     return NotFound();
@@ -66,12 +69,13 @@ namespace RiichiGang.WebApi.Controllers
                 return Ok((UserViewModel) user);
             });
 
-        [HttpDelete("{id}")]
+        [HttpDelete]
         [Authorize]
-        public Task<ActionResult> DeleteAsync(int id)
+        public Task<ActionResult> DeleteAsync()
             => ExecuteAsync(async () =>
             {
-                var user = _userService.GetById(id);
+                var username = User.Username();
+                var user = _userService.GetByUsername(username);
 
                 if (user is null)
                     return NotFound();

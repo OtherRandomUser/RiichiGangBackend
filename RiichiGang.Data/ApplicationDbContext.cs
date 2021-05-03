@@ -20,6 +20,14 @@ namespace RiichiGang.Data
             modelBuilder.Entity<User>()
                 .OwnsOne(u => u.Stats);
 
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Username)
+                .IsUnique();
+
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
+
             base.OnModelCreating(modelBuilder);
         }
     }
