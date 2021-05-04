@@ -9,7 +9,6 @@ namespace RiichiGang.WebApi.ViewModel
         public DateTime CreatedAt { get; set; }
         public string Message { get; set; }
         public int? MembershipId { get; set; }
-        public UserShortViewModel Requester { get; set; }
 
         public static implicit operator NotificationViewModel(Notification notification)
         {
@@ -21,8 +20,7 @@ namespace RiichiGang.WebApi.ViewModel
                 Id = notification.Id,
                 CreatedAt = notification.CreatedAt,
                 Message = notification.Message,
-                MembershipId = notification.MembershipId,
-                Requester = notification.Requester
+                MembershipId = notification.MembershipId
             };
         }
     }

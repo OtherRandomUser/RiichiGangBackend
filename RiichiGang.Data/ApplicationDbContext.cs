@@ -17,6 +17,14 @@ namespace RiichiGang.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Notification
+            // modelBuilder.Entity<Notification>()
+            //     .HasOne(n => n.Requester);
+
+            // modelBuilder.Entity<Notification>()
+            //     .HasOne(n => n.User);
+
+            // User
             modelBuilder.Entity<User>()
                 .OwnsOne(u => u.Stats);
 

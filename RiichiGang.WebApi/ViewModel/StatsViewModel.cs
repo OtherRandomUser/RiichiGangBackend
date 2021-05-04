@@ -27,16 +27,16 @@ namespace RiichiGang.WebApi.ViewModel
             {
                 TotalGames = stats.TotalGames,
                 TotalRounds = stats.TotalRounds,
-                FirstRate = Math.Round(((double) stats.FirstPlaces / stats.TotalGames) * 100, 2),
-                SecondRate = Math.Round(((double) stats.SecondPlaces / stats.TotalGames) * 100, 2),
-                ThirdRate = Math.Round(((double) stats.ThirdPlaces / stats.TotalGames) * 100, 2),
-                FourthRate = Math.Round(((double) stats.FourthPlaces / stats.TotalGames) * 100, 2),
-                BustingRate = Math.Round(((double) stats.TotalBusted / stats.TotalGames) * 100, 2),
-                WinRate = Math.Round(((double) stats.WinRounds / stats.TotalRounds) * 100, 2),
-                TsumoRate = Math.Round(((double) stats.TsumoRounds / stats.TotalRounds) * 100, 2),
-                CallRate = Math.Round(((double) stats.CallRounds / stats.TotalRounds) * 100, 2),
-                RiichiRate = Math.Round(((double) stats.RiichiRounds / stats.TotalRounds) * 100, 2),
-                DealInRate = Math.Round(((double) stats.DealInRounds / stats.TotalRounds) * 100, 2),
+                FirstRate = stats.TotalGames == 0 ? 0 : Math.Round(((double) stats.FirstPlaces / stats.TotalGames) * 100, 2),
+                SecondRate = stats.TotalGames == 0 ? 0 : Math.Round(((double) stats.SecondPlaces / stats.TotalGames) * 100, 2),
+                ThirdRate = stats.TotalGames == 0 ? 0 : Math.Round(((double) stats.ThirdPlaces / stats.TotalGames) * 100, 2),
+                FourthRate = stats.TotalGames == 0 ? 0 : Math.Round(((double) stats.FourthPlaces / stats.TotalGames) * 100, 2),
+                BustingRate = stats.TotalGames == 0 ? 0 : Math.Round(((double) stats.TotalBusted / stats.TotalGames) * 100, 2),
+                WinRate = stats.TotalRounds == 0 ? 0 : Math.Round(((double) stats.WinRounds / stats.TotalRounds) * 100, 2),
+                TsumoRate = stats.TotalRounds == 0 ? 0 : Math.Round(((double) stats.TsumoRounds / stats.TotalRounds) * 100, 2),
+                CallRate = stats.TotalRounds == 0 ? 0 : Math.Round(((double) stats.CallRounds / stats.TotalRounds) * 100, 2),
+                RiichiRate = stats.TotalRounds == 0 ? 0 : Math.Round(((double) stats.RiichiRounds / stats.TotalRounds) * 100, 2),
+                DealInRate = stats.TotalRounds == 0 ? 0 : Math.Round(((double) stats.DealInRounds / stats.TotalRounds) * 100, 2),
             };
         }
     }

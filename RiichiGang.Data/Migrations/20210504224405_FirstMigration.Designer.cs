@@ -9,8 +9,8 @@ using RiichiGang.Data;
 namespace RiichiGang.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210418160040_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20210504224405_FirstMigration")]
+    partial class FirstMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -21,9 +21,9 @@ namespace RiichiGang.Data.Migrations
 
             modelBuilder.Entity("RiichiGang.Domain.Club", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
+                        .HasColumnType("int");
 
                     b.Property<string>("Contact")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
@@ -37,8 +37,8 @@ namespace RiichiGang.Data.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<Guid>("OwnerId")
-                        .HasColumnType("char(36)");
+                    b.Property<int>("OwnerId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Website")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
@@ -52,12 +52,12 @@ namespace RiichiGang.Data.Migrations
 
             modelBuilder.Entity("RiichiGang.Domain.Membership", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
+                        .HasColumnType("int");
 
-                    b.Property<Guid>("ClubId")
-                        .HasColumnType("char(36)");
+                    b.Property<int>("ClubId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -68,8 +68,8 @@ namespace RiichiGang.Data.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("char(36)");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -82,9 +82,9 @@ namespace RiichiGang.Data.Migrations
 
             modelBuilder.Entity("RiichiGang.Domain.Notification", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -92,14 +92,14 @@ namespace RiichiGang.Data.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<Guid?>("MembershipId")
-                        .HasColumnType("char(36)");
+                    b.Property<int?>("MembershipId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Message")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("char(36)");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -110,11 +110,33 @@ namespace RiichiGang.Data.Migrations
                     b.ToTable("Notifications");
                 });
 
+            modelBuilder.Entity("RiichiGang.Domain.Tournament", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Tournaments");
+                });
+
             modelBuilder.Entity("RiichiGang.Domain.User", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -123,15 +145,21 @@ namespace RiichiGang.Data.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Email")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<string>("PasswordHash")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("Username")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("Username")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });
@@ -139,7 +167,7 @@ namespace RiichiGang.Data.Migrations
             modelBuilder.Entity("RiichiGang.Domain.Club", b =>
                 {
                     b.HasOne("RiichiGang.Domain.User", "Owner")
-                        .WithMany()
+                        .WithMany("OwnedClubs")
                         .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -154,7 +182,7 @@ namespace RiichiGang.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("RiichiGang.Domain.User", "User")
-                        .WithMany()
+                        .WithMany("Memberships")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -167,18 +195,25 @@ namespace RiichiGang.Data.Migrations
                         .HasForeignKey("MembershipId");
 
                     b.HasOne("RiichiGang.Domain.User", "User")
-                        .WithMany()
+                        .WithMany("Notifications")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("RiichiGang.Domain.Tournament", b =>
+                {
+                    b.HasOne("RiichiGang.Domain.User", null)
+                        .WithMany("Tournaments")
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("RiichiGang.Domain.User", b =>
                 {
                     b.OwnsOne("RiichiGang.Domain.Stats", "Stats", b1 =>
                         {
-                            b1.Property<Guid>("UserId")
-                                .HasColumnType("char(36)");
+                            b1.Property<int>("UserId")
+                                .HasColumnType("int");
 
                             b1.Property<int>("CallRounds")
                                 .HasColumnType("int");
@@ -196,6 +231,9 @@ namespace RiichiGang.Data.Migrations
                                 .HasColumnType("int");
 
                             b1.Property<int>("SecondPlaces")
+                                .HasColumnType("int");
+
+                            b1.Property<int>("ThirdPlaces")
                                 .HasColumnType("int");
 
                             b1.Property<int>("TotalBusted")

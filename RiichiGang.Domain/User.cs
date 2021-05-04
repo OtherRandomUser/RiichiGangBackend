@@ -25,6 +25,11 @@ namespace RiichiGang.Domain
             SetEmail(email);
             SetPasswordHash(passwordHash);
             Stats = new Stats();
+
+            OwnedClubs = new List<Club>();
+            Memberships = new List<Membership>();
+            Tournaments = new List<Tournament>();
+            Notifications = new List<Notification>();
         }
 
         public void SetUsername(string username)
