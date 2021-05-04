@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -92,9 +93,57 @@ namespace RiichiGang.WebApi.Controllers
                 var user = _userService.GetById(id);
 
                 if (user is null)
-                    return NotFound();
+                    return NotFound("Usuário não encontrado");
 
                 return Ok((UserViewModel) user);
+            });
+
+        [HttpPost("notifications/{notificationId}/confirm")]
+        [Authorize]
+        public Task<ActionResult> ConfirmNotificationAsync(int notificationId)
+            => ExecuteAsync(async () =>
+            {
+                var username = User.Username();
+                var user = _userService.GetByUsername(username);
+
+                if (user is null)
+                    return NotFound();
+
+                var notification = user.Notifications
+                    .FirstOrDefault(n => n.Id == notificationId);
+
+                if (notification is null)
+                    return NotFound();
+
+                if (notification.MembershipId.HasValue)
+                    await _userService.ConfirmMembershipAsync(user, notification.MembershipId.Value);
+
+                await _userService.DeleteNotificationAsync(notification);
+                return Ok();
+            });
+
+        [HttpPost("notifications/{notificationId}/deny")]
+        [Authorize]
+        public Task<ActionResult> DenyNotificationAsync(int notificationId)
+            => ExecuteAsync(async () =>
+            {
+                var username = User.Username();
+                var user = _userService.GetByUsername(username);
+
+                if (user is null)
+                    return NotFound();
+
+                var notification = user.Notifications
+                    .FirstOrDefault(n => n.Id == notificationId);
+
+                if (notification is null)
+                    return NotFound();
+
+                if (notification.MembershipId.HasValue)
+                    await _userService.DenyMembershipAsync(user, notification.MembershipId.Value);
+
+                await _userService.DeleteNotificationAsync(notification);
+                return Ok();
             });
     }
 }

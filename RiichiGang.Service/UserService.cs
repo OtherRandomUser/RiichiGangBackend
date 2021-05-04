@@ -22,6 +22,7 @@ namespace RiichiGang.Service
             => _context.Users.AsQueryable()
                 .Include(u => u.OwnedClubs)
                 .Include(u => u.Memberships)
+                    .ThenInclude(m => m.Club)
                 .Include(u => u.Tournaments)
                 .Include(u => u.Notifications)
                 .SingleOrDefault(u => u.Id == id);
@@ -30,6 +31,7 @@ namespace RiichiGang.Service
             => _context.Users.AsQueryable()
                 .Include(u => u.OwnedClubs)
                 .Include(u => u.Memberships)
+                    .ThenInclude(m => m.Club)
                 .Include(u => u.Tournaments)
                 .Include(u => u.Notifications)
                 .SingleOrDefault(u => u.Username == username);
@@ -38,6 +40,7 @@ namespace RiichiGang.Service
             => _context.Users.AsQueryable()
                 .Include(u => u.OwnedClubs)
                 .Include(u => u.Memberships)
+                    .ThenInclude(m => m.Club)
                 .Include(u => u.Tournaments)
                 .Include(u => u.Notifications)
                 .SingleOrDefault(u => u.Email == email);
@@ -46,6 +49,7 @@ namespace RiichiGang.Service
             => _context.Users.AsQueryable()
                 .Include(u => u.OwnedClubs)
                 .Include(u => u.Memberships)
+                    .ThenInclude(m => m.Club)
                 .Include(u => u.Tournaments)
                 .Include(u => u.Notifications)
                 .Where(predicate)
@@ -122,6 +126,41 @@ namespace RiichiGang.Service
         {
             _context.Remove(user);
             await _context.SaveChangesAsync();
+        }
+
+        public Task ConfirmMembershipAsync(User user, int membershipId)
+        {
+            var membership = _context.Memberships
+                .FirstOrDefault(m => m.UserId == user.Id && m.Id == membershipId);
+
+            if (membership is null)
+                throw new ArgumentNullException("Afiliação não encontrada");
+
+            membership.Status = MembershipStatus.Confirmed;
+            _context.Update(membership);
+            return _context.SaveChangesAsync();
+        }
+
+        public Task DenyMembershipAsync(User user, int membershipId)
+        {
+            var membership = _context.Memberships
+                .FirstOrDefault(m => m.UserId == user.Id && m.Id == membershipId);
+
+            if (membership is null)
+                throw new ArgumentNullException("Afiliação não encontrada");
+
+            membership.Status = MembershipStatus.Denied;
+            _context.Update(membership);
+            return _context.SaveChangesAsync();
+        }
+
+        public Task DeleteNotificationAsync(Notification notification)
+        {
+            if (notification is null)
+                throw new ArgumentNullException("Notificação não pode ser nula");
+
+            _context.Remove(notification);
+            return _context.SaveChangesAsync();
         }
     }
 }
