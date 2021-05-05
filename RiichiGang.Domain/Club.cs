@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace RiichiGang.Domain
 {
@@ -11,6 +12,8 @@ namespace RiichiGang.Domain
         public User Owner { get; protected set; }
         public int OwnerId { get; protected set; }
 
+        public IEnumerable<Membership> Members { get; protected set; }
+
         private Club()
         {
         }
@@ -21,6 +24,8 @@ namespace RiichiGang.Domain
             SetOwner(owner);
             Website = website;
             Contact = contact;
+
+            Members = new List<Membership>();
         }
 
         public void SetOwner(User owner)
