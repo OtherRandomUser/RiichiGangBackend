@@ -27,11 +27,18 @@ namespace RiichiGang.WebApi.Controllers
 
         [HttpPost("signup")]
         [AllowAnonymous]
-        public Task<ActionResult<UserViewModel>> SignUpAsync([FromBody] UserInputModel inputModel)
-            => ExecuteAsync<UserViewModel>(async () =>
+        public Task<ActionResult<LoginViewModel>> SignUpAsync(
+            [FromBody] UserInputModel inputModel,
+            [FromServices] AuthenticationService authService)
+            => ExecuteAsync<LoginViewModel>(async () =>
             {
                 var user = await _userService.AddUserAsync(inputModel);
-                return Ok((UserViewModel) user);
+                var token = authService.Authenticate(user, inputModel.Password);
+                return Ok(new LoginViewModel
+                {
+                    User = user,
+                    Token = token
+                });
             });
 
         [HttpPost("login")]
