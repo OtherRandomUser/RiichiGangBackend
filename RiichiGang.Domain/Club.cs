@@ -23,9 +23,9 @@ namespace RiichiGang.Domain
         {
             SetName(name);
             SetOwner(owner);
-            Website = website;
-            Contact = contact;
-            Localization = localization;
+            SetWebsite(website);
+            SetContact(contact);
+            SetLocalization(localization);
 
             Members = new List<Membership>();
         }
@@ -44,6 +44,33 @@ namespace RiichiGang.Domain
                     "Preencha o nome do clube");
 
             Name = name;
+        }
+
+        public void SetWebsite(string website)
+        {
+            if (string.IsNullOrWhiteSpace(website))
+                throw new ArgumentNullException(
+                    "Preencha o site do clube");
+
+            Website = website;
+        }
+
+        public void SetContact(string contact)
+        {
+            if (string.IsNullOrWhiteSpace(contact))
+                throw new ArgumentNullException(
+                    "Preencha o contato do clube");
+
+            Contact = contact;
+        }
+
+        public void SetLocalization(string localization)
+        {
+            if (string.IsNullOrWhiteSpace(localization))
+                throw new ArgumentNullException(
+                    "Preencha o contato do clube");
+
+            Localization = localization;
         }
     }
 }

@@ -27,6 +27,7 @@ namespace RiichiGang.Service
         public Club GetById(int clubId)
             => _context.Clubs.AsQueryable()
                 .Include(c => c.Owner)
+                .Include(c => c.Members)
                 .SingleOrDefault(c => c.Id == clubId);
 
         public async Task<Club> AddClubAsync(ClubInputModel inputModel, User owner)
@@ -49,6 +50,46 @@ namespace RiichiGang.Service
             await _context.SaveChangesAsync();
 
             return club;
+        }
+
+        public async Task<Club> UpdateClubAsync(Club club, ClubInputModel inputModel)
+        {
+            if (club is null)
+                throw new ArgumentNullException("Clube não pode ser nulo");
+
+            if (!string.IsNullOrWhiteSpace(inputModel.Name))
+            {
+                if (_context.Clubs.AsQueryable().Any(c => c.Name == inputModel.Name))
+                    throw new ArgumentException($"Nome de clube \"{inputModel.Name}\" já cadastrado");
+
+                club.SetName(inputModel.Name);
+            }
+
+            if (!string.IsNullOrWhiteSpace(inputModel.Website))
+            {
+                club.SetWebsite(inputModel.Website);
+            }
+
+            if (!string.IsNullOrWhiteSpace(inputModel.Contact))
+            {
+                club.SetContact(inputModel.Contact);
+            }
+
+            if (!string.IsNullOrWhiteSpace(inputModel.Localization))
+            {
+                club.SetLocalization(inputModel.Localization);
+            }
+
+            _context.Update(club);
+            await _context.SaveChangesAsync();
+
+            return club;
+        }
+
+        public async Task DeleteClubAsync(Club club)
+        {
+            _context.Remove(club);
+            await _context.SaveChangesAsync();
         }
     }
 }

@@ -6,7 +6,7 @@ namespace RiichiGang.WebApi.ViewModel
     public class TournamentViewModel
     {
         public int Id { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public string CreatedAt { get; set; }
 
         public static implicit operator TournamentViewModel(Tournament tournament)
         {
@@ -16,7 +16,7 @@ namespace RiichiGang.WebApi.ViewModel
             return new TournamentViewModel
             {
                 Id = tournament.Id,
-                CreatedAt = tournament.CreatedAt
+                CreatedAt = tournament.CreatedAt.ToString("dd/MM/yyyy")
             };
         }
     }

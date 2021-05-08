@@ -6,7 +6,7 @@ namespace RiichiGang.WebApi.ViewModel
     public class NotificationViewModel
     {
         public int Id { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public string CreatedAt { get; set; }
         public string Message { get; set; }
         public int? MembershipId { get; set; }
 
@@ -18,7 +18,7 @@ namespace RiichiGang.WebApi.ViewModel
             return new NotificationViewModel
             {
                 Id = notification.Id,
-                CreatedAt = notification.CreatedAt,
+                CreatedAt = notification.CreatedAt.ToString("dd/MM/yyyy"),
                 Message = notification.Message,
                 MembershipId = notification.MembershipId
             };

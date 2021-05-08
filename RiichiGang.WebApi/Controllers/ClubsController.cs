@@ -58,7 +58,7 @@ namespace RiichiGang.WebApi.Controllers
 
         [HttpPost]
         [Authorize]
-        public Task<ActionResult<ClubViewModel>> PostAsync(ClubInputModel inputModel)
+        public Task<ActionResult<ClubViewModel>> PostAsync([FromBody] ClubInputModel inputModel)
             => ExecuteAsync<ClubViewModel>(async () =>
             {
                 var username = User.Username();
@@ -68,9 +68,45 @@ namespace RiichiGang.WebApi.Controllers
                 return Ok((ClubViewModel) club);
             });
 
-        // TODO PATCH
+        [HttpPut("{id}")]
+        [Authorize]
+        public Task<ActionResult<ClubViewModel>> PutAsync(int id, [FromBody] ClubInputModel inputModel)
+            => ExecuteAsync<ClubViewModel>(async () =>
+            {
+                var username = User.Username();
+                var user = _userService.GetByUsername(username);
 
-        // TODO DELETE
+                var club = _clubService.GetById(id);
+
+                if (club is null)
+                    return NotFound();
+
+                if (club.OwnerId != user.Id)
+                    return Forbid();
+
+                club = await _clubService.UpdateClubAsync(club, inputModel);
+                return Ok((ClubViewModel) club);
+            });
+
+        [HttpDelete("{id}")]
+        [Authorize]
+        public Task<ActionResult> DeleteAsync(int id)
+            => ExecuteAsync(async () =>
+            {
+                var username = User.Username();
+                var user = _userService.GetByUsername(username);
+
+                var club = _clubService.GetById(id);
+
+                if (club is null)
+                    return NotFound();
+
+                if (club.OwnerId != user.Id)
+                    return Forbid();
+
+                await _clubService.DeleteClubAsync(club);
+                return Ok();
+            });
 
         // TODO POST {id}/members/invite
 

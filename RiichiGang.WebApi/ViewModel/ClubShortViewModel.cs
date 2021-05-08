@@ -7,7 +7,7 @@ namespace RiichiGang.WebApi.ViewModel
     public class ClubShortViewModel
     {
         public int Id { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public string CreatedAt { get; set; }
         public string Name { get; set; }
         public string Website { get; set; }
         public string Contact { get; set; }
@@ -23,7 +23,7 @@ namespace RiichiGang.WebApi.ViewModel
             return new ClubShortViewModel
             {
                 Id = club.Id,
-                CreatedAt = club.CreatedAt,
+                CreatedAt = club.CreatedAt.ToString("dd/MM/yyyy"),
                 Name = club.Name,
                 Website = club.Website,
                 Contact = club.Contact,

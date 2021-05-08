@@ -8,7 +8,7 @@ namespace RiichiGang.WebApi.ViewModel
     public sealed class UserViewModel
     {
         public int Id { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public string CreatedAt { get; set; }
         public string Username { get; set; }
         public string Email { get; set; }
         public StatsViewModel Stats { get; set; }
@@ -25,7 +25,7 @@ namespace RiichiGang.WebApi.ViewModel
             return new UserViewModel
             {
                 Id = user.Id,
-                CreatedAt = user.CreatedAt,
+                CreatedAt = user.CreatedAt.ToString("dd/MM/yyyy"),
                 Username = user.Username,
                 Email = user.Email,
                 Stats = user.Stats,
