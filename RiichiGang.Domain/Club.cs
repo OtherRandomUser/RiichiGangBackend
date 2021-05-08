@@ -8,6 +8,7 @@ namespace RiichiGang.Domain
         public string Name { get; protected set; }
         public string Website { get; set; }
         public string Contact { get; set; }
+        public string Localization { get; set; }
 
         public User Owner { get; protected set; }
         public int OwnerId { get; protected set; }
@@ -18,12 +19,13 @@ namespace RiichiGang.Domain
         {
         }
 
-        public Club(string name, User owner, string website, string contact)
+        public Club(string name, User owner, string website, string contact, string localization)
         {
             SetName(name);
             SetOwner(owner);
             Website = website;
             Contact = contact;
+            Localization = localization;
 
             Members = new List<Membership>();
         }

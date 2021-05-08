@@ -1,15 +1,19 @@
 using System;
+using System.Linq;
 using RiichiGang.Domain;
 
 namespace RiichiGang.WebApi.ViewModel
 {
     public class ClubShortViewModel
     {
-        int Id { get; set; }
+        public int Id { get; set; }
         public DateTime CreatedAt { get; set; }
         public string Name { get; set; }
         public string Website { get; set; }
         public string Contact { get; set; }
+        public string Localization { get; set; }
+        public int TotalPlayers { get; set; }
+        public int TotalTournaments { get; set; }
 
         public static implicit operator ClubShortViewModel(Club club)
         {
@@ -22,7 +26,10 @@ namespace RiichiGang.WebApi.ViewModel
                 CreatedAt = club.CreatedAt,
                 Name = club.Name,
                 Website = club.Website,
-                Contact = club.Contact
+                Contact = club.Contact,
+                Localization = club.Localization,
+                TotalPlayers = club.Members?.Count() + 1 ?? 0,
+                TotalTournaments = 0
             };
         }
     }

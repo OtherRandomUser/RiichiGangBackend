@@ -12,6 +12,7 @@ namespace RiichiGang.WebApi.ViewModel
         public string Name { get; set; }
         public string Website { get; set; }
         public string Contact { get; set; }
+        public string Localization { get; set; }
 
         public UserShortViewModel Owner { get; set; }
         public IEnumerable<ClubMembershipViewModel> Members { get; set; }
@@ -28,6 +29,7 @@ namespace RiichiGang.WebApi.ViewModel
                 Name = club.Name,
                 Website = club.Website,
                 Contact = club.Contact,
+                Localization = club.Localization,
                 Owner = club.Owner,
                 Members = club.Members?.Select(m => (ClubMembershipViewModel) m)
             };

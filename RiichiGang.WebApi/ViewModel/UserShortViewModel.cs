@@ -10,6 +10,7 @@ namespace RiichiGang.WebApi.ViewModel
         public int Id { get; set; }
         public DateTime CreatedAt { get; set; }
         public string Username { get; set; }
+        public int TotalTournaments { get; set; }
 
         public static implicit operator UserShortViewModel(User user)
         {
@@ -20,7 +21,8 @@ namespace RiichiGang.WebApi.ViewModel
             {
                 Id = user.Id,
                 CreatedAt = user.CreatedAt,
-                Username = user.Username
+                Username = user.Username,
+                TotalTournaments = user.Tournaments?.Count() ?? 0
             };
         }
     }

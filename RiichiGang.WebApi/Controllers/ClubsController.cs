@@ -68,8 +68,6 @@ namespace RiichiGang.WebApi.Controllers
                 return Ok((ClubViewModel) club);
             });
 
-        // TODO POST
-
         // TODO PATCH
 
         // TODO DELETE

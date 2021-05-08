@@ -57,6 +57,7 @@ namespace RiichiGang.WebApi
                 {
                     builder.AllowAnyOrigin();
                     builder.AllowAnyHeader();
+                    builder.AllowAnyMethod();
                 });
             });
             services.AddControllers();

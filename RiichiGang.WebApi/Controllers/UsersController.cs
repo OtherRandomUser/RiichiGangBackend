@@ -62,7 +62,7 @@ namespace RiichiGang.WebApi.Controllers
                 });
             });
 
-        [HttpPatch]
+        [HttpPut]
         [Authorize]
         public Task<ActionResult<UserViewModel>> UpdateAsync([FromBody] UserInputModel inputModel)
             => ExecuteAsync<UserViewModel>(async () =>
@@ -93,7 +93,7 @@ namespace RiichiGang.WebApi.Controllers
             });
 
         [HttpGet("{id}")]
-        [Authorize]
+        [AllowAnonymous]
         public Task<ActionResult> GetAsync(int id)
             => ExecuteAsync(() =>
             {

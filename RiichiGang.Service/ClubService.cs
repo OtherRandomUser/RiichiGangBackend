@@ -43,7 +43,7 @@ namespace RiichiGang.Service
             if (_context.Clubs.AsQueryable().Any(c => c.Name.ToUpper() == inputModel.Name.ToUpper()))
                 throw new ArgumentException($"Clube \"{inputModel.Name}\" já cadastrado");
 
-            var club = new Club(inputModel.Name, owner, inputModel.Website, inputModel.Contact);
+            var club = new Club(inputModel.Name, owner, inputModel.Website, inputModel.Contact, inputModel.Localization);
 
             await _context.AddAsync(club);
             await _context.SaveChangesAsync();
