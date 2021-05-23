@@ -7,6 +7,7 @@ namespace RiichiGang.WebApi.ViewModel
     {
         public int Id { get; set; }
         public string CreatedAt { get; set; }
+        public UserShortViewModel Creator { get; set; }
         public string Message { get; set; }
         public int? MembershipId { get; set; }
 
@@ -19,6 +20,7 @@ namespace RiichiGang.WebApi.ViewModel
             {
                 Id = notification.Id,
                 CreatedAt = notification.CreatedAt.ToString("dd/MM/yyyy"),
+                Creator = notification.Creator,
                 Message = notification.Message,
                 MembershipId = notification.MembershipId
             };

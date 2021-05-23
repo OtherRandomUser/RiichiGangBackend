@@ -108,10 +108,63 @@ namespace RiichiGang.WebApi.Controllers
                 return Ok();
             });
 
-        // TODO POST {id}/members/invite
+        [HttpPost("{id}/members/invite")]
+        [Authorize]
+        public Task<ActionResult> AskInviteAsync(int id)
+            => ExecuteAsync(async () =>
+            {
+                var username = User.Username();
+                var user = _userService.GetByUsername(username);
 
-        // TODO POST {id}/members/quit
+                var club = _clubService.GetById(id);
 
-        // TODO DELETE {id}/members/{userId}
+                if (club is null)
+                    return NotFound();
+
+                await _clubService.AskInviteAsync(user, club);
+                return Ok();
+            });
+
+        [HttpDelete("{id}/members")]
+        [Authorize]
+        public Task<ActionResult> QuitAsync(int id)
+            => ExecuteAsync(async () =>
+            {
+                var username = User.Username();
+                var user = _userService.GetByUsername(username);
+
+                var club = _clubService.GetById(id);
+
+                if (club is null)
+                    return NotFound();
+
+                await _clubService.QuitAsync(user, club);
+                return Ok();
+            });
+
+        [HttpDelete("{id}/members/{userId}")]
+        [Authorize]
+        public Task<ActionResult> RemoveMemberAsync(int id, int userId)
+            => ExecuteAsync(async () =>
+            {
+                var username = User.Username();
+                var owner = _userService.GetByUsername(username);
+
+                var club = _clubService.GetById(id);
+
+                if (club is null)
+                    return NotFound();
+
+                if (club.OwnerId != owner.Id)
+                    return Forbid();
+
+                var user = _userService.GetById(userId);
+
+                if (user is null)
+                    return NotFound();
+
+                await _clubService.QuitAsync(user, club);
+                return Ok();
+            });
     }
 }

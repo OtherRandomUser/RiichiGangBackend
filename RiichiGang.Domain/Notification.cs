@@ -6,6 +6,9 @@ namespace RiichiGang.Domain
     {
         public string Message { get; protected set; }
 
+        public User Creator { get; protected set; }
+        public int CreatorId { get; protected set; }
+
         public User User { get; protected set; }
         public int UserId { get; protected set; }
 
@@ -16,13 +19,17 @@ namespace RiichiGang.Domain
         {
         }
 
-        public Notification(string message, User user, Membership membership)
+        public Notification(string message, User creator, User user, Membership membership)
         {
             if (string.IsNullOrWhiteSpace(message))
                 throw new ArgumentNullException(
                     "A mensagem de uma notificação não pode ser nula");
 
             Message = message;
+
+            CreatorId = creator?.Id ?? throw new ArgumentNullException(
+                "O usuário criador de uma notificação não pode ser nulo");
+            Creator = creator;
 
             UserId = user?.Id ?? throw new ArgumentNullException(
                 "O usuário alvo de uma notificação não pode ser nulo");

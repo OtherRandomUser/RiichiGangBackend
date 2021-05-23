@@ -91,5 +91,42 @@ namespace RiichiGang.Service
             _context.Remove(club);
             await _context.SaveChangesAsync();
         }
+
+        public async Task AskInviteAsync(User user, Club club)
+        {
+            if (user is null)
+                throw new ArgumentNullException(nameof(user));
+
+            if (club is null)
+                throw new ArgumentNullException(nameof(club));
+
+            if (club.Members.Any(m => m.UserId == user.Id))
+                throw new ArgumentException($"{user.Username} já é um membro do clube {club.Name}");
+
+            var membership = new Membership(user, club);
+            await _context.AddAsync(membership);
+
+            var notification = new Notification($"pediu para participar do seu clube \"{club.Name}\"", club.Owner, user, membership);
+            await _context.AddAsync(notification);
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task QuitAsync(User user, Club club)
+        {
+            if (user is null)
+                throw new ArgumentNullException(nameof(user));
+
+            if (club is null)
+                throw new ArgumentNullException(nameof(club));
+
+            var membership = club.Members.SingleOrDefault(m => m.UserId == user.Id);
+
+            if (membership is null)
+                throw new ArgumentException($"{user.Username} não é um membro do clube {club.Name}");
+
+            _context.Remove(membership);
+            await _context.SaveChangesAsync();
+        }
     }
 }

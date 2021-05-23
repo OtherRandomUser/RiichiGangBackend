@@ -22,6 +22,14 @@ namespace RiichiGang.Data
                 .HasIndex(c => c.Name)
                 .IsUnique();
 
+            // Notification
+            modelBuilder.Entity<Notification>()
+                .HasOne(n => n.Creator);
+
+            modelBuilder.Entity<Notification>()
+                .HasOne(n => n.User)
+                .WithMany(u => u.Notifications);
+
             // User
             modelBuilder.Entity<User>()
                 .OwnsOne(u => u.Stats);
