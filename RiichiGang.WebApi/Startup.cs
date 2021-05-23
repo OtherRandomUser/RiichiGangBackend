@@ -48,6 +48,7 @@ namespace RiichiGang.WebApi
 
             services.AddScoped<AuthenticationService>();
             services.AddScoped<ClubService>();
+            services.AddScoped<RulesetService>();
             services.AddScoped<UserService>();
 
             // Add ASP.NET Core Services

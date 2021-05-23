@@ -16,18 +16,21 @@ namespace RiichiGang.WebApi.Controllers
     [ApiController]
     public class ClubsController : ApiControllerBase
     {
-        private UserService _userService;
         private ClubService _clubService;
+        private RulesetService _rulesetService;
+        private UserService _userService;
 
         public ClubsController(
             ILogger<ApiControllerBase> logger,
-            UserService userService,
-            ClubService clubService
+            RulesetService rulesetService,
+            ClubService clubService,
+            UserService userService
         )
             : base(logger)
         {
-            _userService = userService;
             _clubService = clubService;
+            _rulesetService = rulesetService;
+            _userService = userService;
         }
 
         [HttpGet]
@@ -199,7 +202,7 @@ namespace RiichiGang.WebApi.Controllers
                 if (club.OwnerId != owner.Id)
                     return Forbid();
 
-                var ruleset = await _clubService.AddRulesetAsync(inputModel, club);
+                var ruleset = await _rulesetService.AddRulesetAsync(inputModel, club);
                 return Ok((RulesetViewModel) ruleset);
             });
 
@@ -224,7 +227,7 @@ namespace RiichiGang.WebApi.Controllers
                 if (club.OwnerId != user.Id)
                     return Forbid();
 
-                ruleset = await _clubService.UpdateRulesetAsync(inputModel, ruleset);
+                ruleset = await _rulesetService.UpdateRulesetAsync(inputModel, ruleset);
                 return Ok((RulesetViewModel) ruleset);
             });
 
@@ -249,7 +252,7 @@ namespace RiichiGang.WebApi.Controllers
                 if (club.OwnerId != user.Id)
                     return Forbid();
 
-                await _clubService.DeleteRulesetAsync(ruleset);
+                await _rulesetService.DeleteRulesetAsync(ruleset);
                 return Ok();
             });
     }
