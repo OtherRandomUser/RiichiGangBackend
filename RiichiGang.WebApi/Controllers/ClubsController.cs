@@ -166,5 +166,91 @@ namespace RiichiGang.WebApi.Controllers
                 await _clubService.QuitAsync(user, club);
                 return Ok();
             });
+
+        [HttpGet("{id}/rulesets")]
+        [AllowAnonymous]
+        public Task<ActionResult<IEnumerable<RulesetViewModel>>> GetRulesetsAsync(int id)
+            => ExecuteAsync<IEnumerable<RulesetViewModel>>(() =>
+            {
+                var club = _clubService.GetById(id);
+
+                if (club is null)
+                    return NotFound();
+
+                if (!club.Rulesets.Any())
+                    return NoContent();
+
+                return Ok(club.Rulesets.Select(r => (RulesetViewModel) r));
+            });
+
+        [HttpPost("{id}/rulesets")]
+        [Authorize]
+        public Task<ActionResult<RulesetViewModel>> PostRulesetAsync(int id, [FromBody] RulesetInputModel inputModel)
+            => ExecuteAsync<RulesetViewModel>(async () =>
+            {
+                var username = User.Username();
+                var owner = _userService.GetByUsername(username);
+
+                var club = _clubService.GetById(id);
+
+                if (club is null)
+                    return NotFound();
+
+                if (club.OwnerId != owner.Id)
+                    return Forbid();
+
+                var ruleset = await _clubService.AddRulesetAsync(inputModel, club);
+                return Ok((RulesetViewModel) ruleset);
+            });
+
+        [HttpPatch("{id}/rulesets/{rulesetId}")]
+        [Authorize]
+        public Task<ActionResult<RulesetViewModel>> PatchRulesetAsync(int id, int rulesetId, [FromBody] RulesetInputModel inputModel)
+            => ExecuteAsync<RulesetViewModel>(async () =>
+            {
+                var username = User.Username();
+                var user = _userService.GetByUsername(username);
+
+                var club = _clubService.GetById(id);
+
+                if (club is null)
+                    return NotFound();
+
+                var ruleset = club.Rulesets.FirstOrDefault(r => r.Id == rulesetId);
+
+                if (ruleset is null)
+                    return NotFound();
+
+                if (club.OwnerId != user.Id)
+                    return Forbid();
+
+                ruleset = await _clubService.UpdateRulesetAsync(inputModel, ruleset);
+                return Ok((RulesetViewModel) ruleset);
+            });
+
+        [HttpDelete("{id}/rulesets/{rulesetId}")]
+        [Authorize]
+        public Task<ActionResult<RulesetViewModel>> DeleteRulesetAsync(int id, int rulesetId)
+            => ExecuteAsync<RulesetViewModel>(async () =>
+            {
+                var username = User.Username();
+                var user = _userService.GetByUsername(username);
+
+                var club = _clubService.GetById(id);
+
+                if (club is null)
+                    return NotFound();
+
+                var ruleset = club.Rulesets.FirstOrDefault(r => r.Id == rulesetId);
+
+                if (ruleset is null)
+                    return NotFound();
+
+                if (club.OwnerId != user.Id)
+                    return Forbid();
+
+                await _clubService.DeleteRulesetAsync(ruleset);
+                return Ok();
+            });
     }
 }

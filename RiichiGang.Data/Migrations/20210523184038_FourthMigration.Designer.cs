@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RiichiGang.Data;
 
 namespace RiichiGang.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210523184038_FourthMigration")]
+    partial class FourthMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -162,7 +164,7 @@ namespace RiichiGang.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<int>("Oka")
                         .HasColumnType("int");
@@ -190,8 +192,7 @@ namespace RiichiGang.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ClubId", "Name")
-                        .IsUnique();
+                    b.HasIndex("ClubId");
 
                     b.ToTable("Rulesets");
                 });
@@ -296,7 +297,7 @@ namespace RiichiGang.Data.Migrations
             modelBuilder.Entity("RiichiGang.Domain.Ruleset", b =>
                 {
                     b.HasOne("RiichiGang.Domain.Club", "Club")
-                        .WithMany("Rulesets")
+                        .WithMany()
                         .HasForeignKey("ClubId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

@@ -8,8 +8,9 @@ namespace RiichiGang.Data
         public DbSet<Club> Clubs { get; set; }
         public DbSet<Membership> Memberships { get; set; }
         public DbSet<Notification> Notifications { get; set; }
-        public DbSet<User> Users { get; set; }
+        public DbSet<Ruleset> Rulesets { get; set; }
         public DbSet<Tournament> Tournaments { get; set; }
+        public DbSet<User> Users { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
@@ -29,6 +30,15 @@ namespace RiichiGang.Data
             modelBuilder.Entity<Notification>()
                 .HasOne(n => n.User)
                 .WithMany(u => u.Notifications);
+
+            // Ruleset
+            modelBuilder.Entity<Ruleset>()
+                .HasIndex(r => new
+                {
+                    ClubId = r.ClubId,
+                    Name = r.Name
+                })
+                .IsUnique();
 
             // User
             modelBuilder.Entity<User>()

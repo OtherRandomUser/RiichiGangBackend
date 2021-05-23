@@ -14,6 +14,7 @@ namespace RiichiGang.Domain
         public int OwnerId { get; protected set; }
 
         public IEnumerable<Membership> Members { get; protected set; }
+        public IEnumerable<Ruleset> Rulesets { get; protected set; }
 
         private Club()
         {
@@ -28,6 +29,7 @@ namespace RiichiGang.Domain
             SetLocalization(localization);
 
             Members = new List<Membership>();
+            Rulesets = new List<Ruleset>();
         }
 
         public void SetOwner(User owner)
