@@ -5,11 +5,15 @@ namespace RiichiGang.Data
 {
     public class ApplicationDbContext : DbContext
     {
+        public DbSet<Bracket> Brackets { get; set; }
+        public DbSet<BracketPlayer> BracketPlayers { get; set; }
         public DbSet<Club> Clubs { get; set; }
+        public DbSet<Game> Games { get; set; }
         public DbSet<Membership> Memberships { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Ruleset> Rulesets { get; set; }
         public DbSet<Tournament> Tournaments { get; set; }
+        public DbSet<TournamentPlayer> TournamentPlayers { get; set; }
         public DbSet<User> Users { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
@@ -22,6 +26,23 @@ namespace RiichiGang.Data
             modelBuilder.Entity<Club>()
                 .HasIndex(c => c.Name)
                 .IsUnique();
+
+            // Game
+            modelBuilder.Entity<Game>()
+                .HasOne(g => g.Toncha)
+                .WithMany();
+
+            modelBuilder.Entity<Game>()
+                .HasOne(g => g.Nancha)
+                .WithMany();
+
+            modelBuilder.Entity<Game>()
+                .HasOne(g => g.Shacha)
+                .WithMany();
+
+            modelBuilder.Entity<Game>()
+                .HasOne(g => g.Peicha)
+                .WithMany();
 
             // Notification
             modelBuilder.Entity<Notification>()
