@@ -1,23 +1,19 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using RiichiGang.Domain;
 
 namespace RiichiGang.WebApi.ViewModel
 {
-    public class TournamentViewModel
+    public class TournamentShortViewModel
     {
         public int Id { get; set; }
         public string CreatedAt { get; set; }
         public string Name { get; set; }
+        public int TotalPlayers { get; set; }
         public string StartDate { get; set; }
         public string Status { get; set; }
-        public bool AllowNonMembers { get; set; }
-        public bool RequirePermission { get; set; }
-        public RulesetViewModel Ruleset { get; set; }
-        public IEnumerable<BracketViewModel> Brackets { get; set; }
 
-        public static implicit operator TournamentViewModel(Tournament tournament)
+        public static implicit operator TournamentShortViewModel(Tournament tournament)
         {
             if (tournament is null)
                 return null;
@@ -39,17 +35,14 @@ namespace RiichiGang.WebApi.ViewModel
                 break;
             }
 
-            return new TournamentViewModel
+            return new TournamentShortViewModel
             {
                 Id = tournament.Id,
                 CreatedAt = tournament.CreatedAt.ToString("dd/MM/yyyy"),
                 Name = tournament.Name,
+                TotalPlayers = tournament.Players?.Count() ?? 0,
                 StartDate = tournament.StartDate.ToString("dd/MM/yyyy"),
                 Status = status,
-                AllowNonMembers = tournament.AllowNonMembers,
-                RequirePermission = tournament.RequirePermission,
-                Ruleset = tournament.Ruleset,
-                Brackets = tournament.Brackets.OrderByDescending(b => b.Sequence).Select(b => (BracketViewModel) b)
             };
         }
     }

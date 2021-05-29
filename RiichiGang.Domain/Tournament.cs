@@ -7,6 +7,8 @@ namespace RiichiGang.Domain
     {
         public string Name { get; protected set; }
         public string Description { get; protected set; }
+        public TournamentStatus Status { get; set; }
+        public DateTime StartDate { get; set; }
 
         public bool AllowNonMembers { get; set; }
         public bool RequirePermission { get; set; }
@@ -21,11 +23,14 @@ namespace RiichiGang.Domain
         {
         }
 
-        public Tournament(string name, string description, Ruleset ruleset)
+        public Tournament(string name, string description, Ruleset ruleset, DateTime startDate)
         {
             SetName(name);
             SetDescription(description);
             SetRuleset(ruleset);
+
+            Status = TournamentStatus.Scheduled;
+            StartDate = startDate;
 
             Players = new List<TournamentPlayer>();
             Brackets = new List<Bracket>();
@@ -52,5 +57,12 @@ namespace RiichiGang.Domain
             RulesetId = ruleset?.Id ?? throw new ArgumentNullException("O ruleset do torneio não pode ser nulo");
             Ruleset = ruleset;
         }
+    }
+
+    public enum TournamentStatus
+    {
+        Scheduled,
+        Running,
+        Finished
     }
 }

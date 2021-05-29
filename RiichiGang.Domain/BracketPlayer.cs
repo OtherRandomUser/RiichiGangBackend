@@ -11,6 +11,7 @@ namespace RiichiGang.Domain
         public Bracket Bracket { get; protected set; }
         public int BracketId { get; protected set; }
 
+        public int Placement { get; set; }
         public float Score { get; set; }
 
         protected BracketPlayer()
@@ -25,6 +26,7 @@ namespace RiichiGang.Domain
             BracketId = bracket?.Id ?? throw new ArgumentNullException("A chave não pode ser nula");
             Bracket = bracket;
 
+            Placement = 0;
             Score = 0;
         }
     }

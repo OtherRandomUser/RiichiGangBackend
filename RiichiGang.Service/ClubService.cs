@@ -22,6 +22,7 @@ namespace RiichiGang.Service
             => _context.Clubs.AsQueryable()
                 .Include(c => c.Owner)
                 .Include(c => c.Members)
+                .Include(c => c.Tournaments)
                 .Include(c => c.Rulesets)
                 .AsEnumerable();
 
@@ -29,6 +30,7 @@ namespace RiichiGang.Service
             => _context.Clubs.AsQueryable()
                 .Include(c => c.Owner)
                 .Include(c => c.Members)
+                .Include(c => c.Tournaments)
                 .Include(c => c.Rulesets)
                 .SingleOrDefault(c => c.Id == clubId);
 

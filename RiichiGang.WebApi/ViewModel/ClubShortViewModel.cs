@@ -29,7 +29,7 @@ namespace RiichiGang.WebApi.ViewModel
                 Contact = club.Contact,
                 Localization = club.Localization,
                 TotalPlayers = club.Members?.Count() + 1 ?? 0,
-                TotalTournaments = 0
+                TotalTournaments = club.Tournaments?.Count() ?? 0
             };
         }
     }

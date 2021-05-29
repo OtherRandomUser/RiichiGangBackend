@@ -12,6 +12,7 @@ namespace RiichiGang.Data
         public DbSet<Membership> Memberships { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Ruleset> Rulesets { get; set; }
+        public DbSet<Series> Series { get; set; }
         public DbSet<Tournament> Tournaments { get; set; }
         public DbSet<TournamentPlayer> TournamentPlayers { get; set; }
         public DbSet<User> Users { get; set; }
@@ -29,20 +30,16 @@ namespace RiichiGang.Data
 
             // Game
             modelBuilder.Entity<Game>()
-                .HasOne(g => g.Toncha)
-                .WithMany();
+                .OwnsOne(g => g.Player1);
 
             modelBuilder.Entity<Game>()
-                .HasOne(g => g.Nancha)
-                .WithMany();
+                .OwnsOne(g => g.Player2);
 
             modelBuilder.Entity<Game>()
-                .HasOne(g => g.Shacha)
-                .WithMany();
+                .OwnsOne(g => g.Player3);
 
             modelBuilder.Entity<Game>()
-                .HasOne(g => g.Peicha)
-                .WithMany();
+                .OwnsOne(g => g.Player4);
 
             // Notification
             modelBuilder.Entity<Notification>()
@@ -60,6 +57,19 @@ namespace RiichiGang.Data
                     Name = r.Name
                 })
                 .IsUnique();
+
+            // Series
+            modelBuilder.Entity<Series>()
+                .HasOne(s => s.Player1);
+
+            modelBuilder.Entity<Series>()
+                .HasOne(s => s.Player2);
+
+            modelBuilder.Entity<Series>()
+                .HasOne(s => s.Player3);
+
+            modelBuilder.Entity<Series>()
+                .HasOne(s => s.Player4);
 
             // User
             modelBuilder.Entity<User>()

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace RiichiGang.Domain
 {
@@ -12,6 +13,8 @@ namespace RiichiGang.Domain
 
         public TournamentPlayerStatus Status { get; set; }
 
+        public IEnumerable<BracketPlayer> Brackets { get; protected set; }
+
         protected TournamentPlayer()
         {
         }
@@ -22,6 +25,8 @@ namespace RiichiGang.Domain
             SetTournament(tournament);
 
             Status = status;
+
+            Brackets = new List<BracketPlayer>();
         }
 
         public void SetUser(User user)
