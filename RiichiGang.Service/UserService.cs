@@ -141,6 +141,19 @@ namespace RiichiGang.Service
             return _context.SaveChangesAsync();
         }
 
+        public Task ConfirmTournamentEntryAsync(User user, int tournamentPlayerId)
+        {
+            var player = _context.TournamentPlayers
+                .FirstOrDefault(p => p.UserId == user.Id && p.Id == tournamentPlayerId);
+
+            if (player is null)
+                throw new ArgumentNullException("Registro não encontrado");
+
+            player.Status = TournamentPlayerStatus.Confirmed;
+            _context.Update(player);
+            return _context.SaveChangesAsync();
+        }
+
         public Task DenyMembershipAsync(User user, int membershipId)
         {
             var membership = _context.Memberships
@@ -151,6 +164,19 @@ namespace RiichiGang.Service
 
             membership.Status = MembershipStatus.Denied;
             _context.Update(membership);
+            return _context.SaveChangesAsync();
+        }
+
+        public Task DenyTournamententryAsync(User user, int tournamentPlayerId)
+        {
+            var player = _context.TournamentPlayers
+                .FirstOrDefault(p => p.UserId == user.Id && p.Id == tournamentPlayerId);
+
+            if (player is null)
+                throw new ArgumentNullException("Afiliação não encontrada");
+
+            player.Status = TournamentPlayerStatus.Denied;
+            _context.Update(player);
             return _context.SaveChangesAsync();
         }
 

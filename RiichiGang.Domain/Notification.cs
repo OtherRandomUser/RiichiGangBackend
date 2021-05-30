@@ -15,11 +15,14 @@ namespace RiichiGang.Domain
         public Membership Membership { get; protected set; }
         public int? MembershipId { get; protected set; }
 
+        public TournamentPlayer TournamentPlayer { get; protected set; }
+        public int? TournamentPlayerId { get; protected set; }
+
         private Notification()
         {
         }
 
-        public Notification(string message, User creator, User user, Membership membership)
+        public Notification(string message, User creator, User user, Membership membership, TournamentPlayer tournamentPlayer)
         {
             if (string.IsNullOrWhiteSpace(message))
                 throw new ArgumentNullException(
@@ -37,6 +40,9 @@ namespace RiichiGang.Domain
 
             MembershipId = membership?.Id;
             Membership = membership;
+
+            TournamentPlayerId = tournamentPlayer?.Id;
+            TournamentPlayer = tournamentPlayer;
         }
     }
 }

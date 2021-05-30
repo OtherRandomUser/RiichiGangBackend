@@ -112,7 +112,7 @@ namespace RiichiGang.Service
             var membership = new Membership(user, club);
             await _context.AddAsync(membership);
 
-            var notification = new Notification($"pediu para participar do seu clube \"{club.Name}\"", club.Owner, user, membership);
+            var notification = new Notification($"pediu para participar do seu clube \"{club.Name}\"", club.Owner, user, membership, null);
             await _context.AddAsync(notification);
 
             await _context.SaveChangesAsync();

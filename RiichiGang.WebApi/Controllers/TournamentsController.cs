@@ -151,11 +151,65 @@ namespace RiichiGang.WebApi.Controllers
                 return Ok();
             });
 
-        // TODO POST {id}/players/invite
+        [HttpPost("{id}/players/invite")]
+        [Authorize]
+        public Task<ActionResult> AskInviteAsync(int id)
+            => ExecuteAsync(async () =>
+            {
+                var username = User.Username();
+                var user = _userService.GetByUsername(username);
 
-        // TODO POST {id}/players/quit
+                var tournament = _tournamentService.GetById(id);
 
-        // TODO DELETE {id}/players/{userId}
+                if (tournament is null)
+                    return NotFound();
+
+                await _tournamentService.AskInviteAsync(tournament, user);
+                return Ok();
+            });
+
+        [HttpDelete("{id}/players")]
+        [Authorize]
+        public Task<ActionResult> QuitAsync(int id)
+            => ExecuteAsync(async () =>
+            {
+                var username = User.Username();
+                var user = _userService.GetByUsername(username);
+
+                var tournament = _tournamentService.GetById(id);
+
+                if (tournament is null)
+                    return NotFound();
+
+                await _tournamentService.QuitAsync(tournament, user);
+                return Ok();
+            });
+
+        [HttpDelete("{id}/players/{userId}")]
+        [Authorize]
+        public Task<ActionResult> RemovePlayerAsync(int id, int userId)
+            => ExecuteAsync(async () =>
+            {
+
+                var username = User.Username();
+                var owner = _userService.GetByUsername(username);
+
+                var tournament = _tournamentService.GetById(id);
+
+                if (tournament is null)
+                    return NotFound();
+
+                if (tournament.Club.OwnerId != owner.Id)
+                    return Forbid();
+
+                var user = _userService.GetById(userId);
+
+                if (user is null)
+                    return NotFound();
+
+                await _tournamentService.QuitAsync(tournament, user);
+                return Ok();
+            });
 
         // TODO POST {id}/init
 

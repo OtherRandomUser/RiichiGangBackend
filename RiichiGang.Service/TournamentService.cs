@@ -122,5 +122,53 @@ namespace RiichiGang.Service
             _context.Remove(tournament);
             await _context.SaveChangesAsync();
         }
+
+        public async Task AskInviteAsync(Tournament tournament, User user)
+        {
+            if (user is null)
+                throw new ArgumentNullException(nameof(user));
+
+            if (tournament is null)
+                throw new ArgumentNullException(nameof(tournament));
+
+            if (tournament.Status != TournamentStatus.Scheduled)
+                throw new Exception("Não é possível participar de um torneio já iniciado");
+
+            if (tournament.Players.Any(p => p.UserId == user.Id))
+                throw new ArgumentException($"{user.Username} já pediu para participar no torneio \"{tournament.Name}\"");
+
+            if (!tournament.RequirePermission || tournament.Club.OwnerId == user.Id)
+            {
+                var player = new TournamentPlayer(user, tournament, TournamentPlayerStatus.Confirmed);
+                await _context.AddAsync(player);
+            }
+            else
+            {
+                var player = new TournamentPlayer(user, tournament, TournamentPlayerStatus.Pending);
+                await _context.AddAsync(player);
+
+                var notification = new Notification($"pediu para participar no torneio \"{tournament.Name}\"", tournament.Club.Owner, user, null, player);
+                await _context.AddAsync(notification);
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        public Task QuitAsync(Tournament tournament, User user)
+        {
+            if (tournament is null)
+                throw new ArgumentNullException(nameof(tournament));
+
+            if (user is null)
+                throw new ArgumentNullException(nameof(user));
+
+            var player = tournament.Players.SingleOrDefault(p => p.UserId == user.Id);
+
+            if (player is null)
+                throw new ArgumentException($"{user.Username} não está inscrito no torneio \"{tournament.Id}\"");
+
+            _context.Remove(player);
+            return _context.SaveChangesAsync();
+        }
     }
 }

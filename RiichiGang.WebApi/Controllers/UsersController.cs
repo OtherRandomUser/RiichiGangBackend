@@ -123,7 +123,10 @@ namespace RiichiGang.WebApi.Controllers
                     return NotFound();
 
                 if (notification.MembershipId.HasValue)
-                    await _userService.ConfirmMembershipAsync(user, notification.MembershipId.Value);
+                    await _userService.ConfirmMembershipAsync(user, notification.TournamentPlayerId.Value);
+
+                if (notification.TournamentPlayerId.HasValue)
+                    await _userService.ConfirmTournamentEntryAsync(user, notification.MembershipId.Value);
 
                 await _userService.DeleteNotificationAsync(notification);
                 return Ok();
@@ -148,6 +151,9 @@ namespace RiichiGang.WebApi.Controllers
 
                 if (notification.MembershipId.HasValue)
                     await _userService.DenyMembershipAsync(user, notification.MembershipId.Value);
+
+                if (notification.TournamentPlayerId.HasValue)
+                    await _userService.DenyTournamententryAsync(user, notification.TournamentPlayerId.Value);
 
                 await _userService.DeleteNotificationAsync(notification);
                 return Ok();
