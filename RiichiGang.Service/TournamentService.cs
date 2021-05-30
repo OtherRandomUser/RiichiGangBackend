@@ -60,20 +60,32 @@ namespace RiichiGang.Service
             };
 
             await _context.AddAsync(tournament);
-            var lastSeq = -1;
 
-            foreach (var im in inputModel.Brackets.OrderBy(b => b.Sequence))
+            if (!inputModel.Brackets.Any())
+                throw new ArgumentException("Um torneio deve ter ao menos uma chave");
+
+            var brackets = inputModel.Brackets.OrderBy(b => b.Sequence);
+            if (brackets.Last().WinCondition != WinCondition.None.ToString())
+                throw new ArgumentException("A última chave não deve conter uma condição de vitória");
+
+            var lastSeq = -1;
+            foreach (var im in brackets)
             {
                 if (lastSeq == im.Sequence)
                     throw new ArgumentException("Existem sequências repetidas");
 
                 lastSeq = im.Sequence;
 
+                var winCondition = Enum.Parse<WinCondition>(im.WinCondition);
+
+                if (winCondition == WinCondition.First || winCondition == WinCondition.FirstAndSecond)
+                    im.NumberOfSeries = 1;
+
                 var bracket = new Bracket(
                     tournament,
                     im.Name,
                     im.Sequence,
-                    Enum.Parse<WinCondition>(im.WinCondition),
+                    winCondition,
                     im.NumberOfAdvancing,
                     im.NumberOfSeries,
                     im.GamesPerSeries);
@@ -169,6 +181,87 @@ namespace RiichiGang.Service
 
             _context.Remove(player);
             return _context.SaveChangesAsync();
+        }
+
+        public async Task InitTournamentAsync(Tournament tournament)
+        {
+            if (tournament is null)
+                throw new ArgumentNullException(nameof(tournament));
+
+            if (tournament.Status != TournamentStatus.Scheduled)
+                throw new ArgumentException("torneio já inicializado");
+
+            if (!tournament.Players.Any())
+                throw new ArgumentException("Torneio não conta com nenhum jogador");
+
+            var players = tournament.Players.Count();
+            var brackets = tournament.Brackets.OrderBy(b => b.Sequence);
+
+            foreach (var bracket in brackets)
+            {
+                if (players % 4 > 0)
+                    throw new ArgumentException($"número de jogadores insuficiente para a chave \"{bracket.Name}\"");
+
+                switch (bracket.WinCondition)
+                {
+                case WinCondition.First:
+                    players = players / 4;
+                    break;
+
+                case WinCondition.FirstAndSecond:
+                    players = players / 2;
+                    break;
+
+                case WinCondition.TopX:
+                    if (players < bracket.NumberOfAdvancing)
+                        throw new ArgumentException($"número de jogadores insuficiente para a chave \"{bracket.Name}\"");
+
+                    players = bracket.NumberOfAdvancing;
+                    break;
+
+                case WinCondition.None:
+                    break;
+                }
+            }
+
+            var firstBracket = brackets.First();
+            var bracketPlayers = new List<BracketPlayer>();
+
+            foreach (var player in tournament.Players)
+            {
+                var bracketPlayer = new BracketPlayer(player, firstBracket);
+                bracketPlayers.Add(bracketPlayer);
+            }
+
+            await _context.AddRangeAsync(bracketPlayers);
+
+            for (var i = 0; i < firstBracket.NumberOfSeries; i++)
+            {
+                var shuffled = bracketPlayers.OrderBy(_ => Guid.NewGuid()).AsEnumerable();
+
+                while (shuffled.Any())
+                {
+                    var seriesPlayers = shuffled.Take(4).ToList();
+                    shuffled = shuffled.Skip(4); // might be straight up wrong
+
+                    var series = new Series(
+                        firstBracket,
+                        seriesPlayers[0],
+                        seriesPlayers[1],
+                        seriesPlayers[2],
+                        seriesPlayers[3]);
+
+                    await _context.AddAsync(series);
+
+                    for (var j = 0; j < firstBracket.GamesPerSeries; j++)
+                    {
+                        var game = new Game(series);
+                        await _context.AddAsync(game);
+                    }
+                }
+            }
+
+            await _context.SaveChangesAsync();
         }
     }
 }

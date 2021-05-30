@@ -190,7 +190,6 @@ namespace RiichiGang.WebApi.Controllers
         public Task<ActionResult> RemovePlayerAsync(int id, int userId)
             => ExecuteAsync(async () =>
             {
-
                 var username = User.Username();
                 var owner = _userService.GetByUsername(username);
 
@@ -211,7 +210,24 @@ namespace RiichiGang.WebApi.Controllers
                 return Ok();
             });
 
-        // TODO POST {id}/init
+        [HttpPost("{id}/init")]
+        public Task<ActionResult> InitTournamentAsync(int id)
+            => ExecuteAsync(async () =>
+            {
+                var username = User.Username();
+                var owner = _userService.GetByUsername(username);
+
+                var tournament = _tournamentService.GetById(id);
+
+                if (tournament is null)
+                    return NotFound();
+
+                if (tournament.Club.OwnerId != owner.Id)
+                    return Forbid();
+
+                await _tournamentService.InitTournamentAsync(tournament);
+                return Ok();
+            });
 
         // TODO POST {id}/game
     }
