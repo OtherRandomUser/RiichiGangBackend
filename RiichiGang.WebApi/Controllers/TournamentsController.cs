@@ -101,9 +101,55 @@ namespace RiichiGang.WebApi.Controllers
                 return Ok((TournamentViewModel) tournament);
             });
 
-        // TODO PATCH
+        [HttpPut("{id}")]
+        [Authorize]
+        public Task<ActionResult<TournamentViewModel>> PatchAsync([FromBody] TournamentInputModel inputModel, int id)
+            => ExecuteAsync<TournamentViewModel>(async () =>
+            {
+                var username = User.Username();
+                var user = _userService.GetByUsername(username);
 
-        // TODO DELETE
+                var tournament = _tournamentService.GetById(id);
+
+                if (tournament is null)
+                    return NotFound();
+
+                if (tournament.Club?.OwnerId != user.Id)
+                    Forbid();
+
+                var ruleset = _rulesetService.GetById(inputModel.RulesetId);
+
+                if (ruleset is null)
+                    return NotFound();
+
+                var club = ruleset.Club;
+
+                if (club?.OwnerId != user.Id)
+                    return Forbid();
+
+                tournament = await _tournamentService.UpdateTournamentAsync(tournament, inputModel, ruleset);
+                return Ok((TournamentViewModel) tournament);
+            });
+
+        [HttpDelete("{id}")]
+        [Authorize]
+        public Task<ActionResult> DeleteAsync(int id)
+            => ExecuteAsync(async () =>
+            {
+                var username = User.Username();
+                var user = _userService.GetByUsername(username);
+
+                var tournament = _tournamentService.GetById(id);
+
+                if (tournament is null)
+                    return NotFound();
+
+                if (tournament.Club?.OwnerId != user.Id)
+                    Forbid();
+
+                await _tournamentService.DeleteTournamentAsync(tournament);
+                return Ok();
+            });
 
         // TODO POST {id}/players/invite
 

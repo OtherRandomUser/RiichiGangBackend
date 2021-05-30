@@ -84,5 +84,43 @@ namespace RiichiGang.Service
             await _context.SaveChangesAsync();
             return tournament;
         }
+
+        public async Task<Tournament> UpdateTournamentAsync(Tournament tournament, TournamentInputModel inputModel, Ruleset ruleset)
+        {
+            if (tournament is null)
+                throw new ArgumentNullException("O clube não pode ser nulo");
+
+            if (tournament.Status != TournamentStatus.Scheduled)
+                throw new Exception("Um torneio já iniciado não pode ser atualizado");
+
+            if (ruleset != null)
+            {
+                if (ruleset.ClubId != tournament.ClubId)
+                    throw new ArgumentException("Ruleset e clube não batem");
+
+                tournament.SetRuleset(ruleset);
+            }
+
+            if (!string.IsNullOrWhiteSpace(inputModel.Name))
+                tournament.SetName(inputModel.Name);
+
+            if (!string.IsNullOrWhiteSpace(inputModel.Description))
+                tournament.SetDescription(inputModel.Description);
+
+            tournament.StartDate = inputModel.StartDate;
+            tournament.AllowNonMembers = inputModel.AllowNonMembers;
+            tournament.RequirePermission = inputModel.RequirePermission;
+
+            _context.Update(tournament);
+            await _context.SaveChangesAsync();
+
+            return tournament;
+        }
+
+        public async Task DeleteTournamentAsync(Tournament tournament)
+        {
+            _context.Remove(tournament);
+            await _context.SaveChangesAsync();
+        }
     }
 }
