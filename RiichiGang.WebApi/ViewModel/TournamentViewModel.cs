@@ -15,7 +15,7 @@ namespace RiichiGang.WebApi.ViewModel
         public bool AllowNonMembers { get; set; }
         public bool RequirePermission { get; set; }
         public RulesetViewModel Ruleset { get; set; }
-        public IEnumerable<BracketViewModel> Brackets { get; set; }
+        public IEnumerable<BracketShortViewModel> Brackets { get; set; }
 
         public static implicit operator TournamentViewModel(Tournament tournament)
         {
@@ -49,7 +49,7 @@ namespace RiichiGang.WebApi.ViewModel
                 AllowNonMembers = tournament.AllowNonMembers,
                 RequirePermission = tournament.RequirePermission,
                 Ruleset = tournament.Ruleset,
-                Brackets = tournament.Brackets.OrderByDescending(b => b.Sequence).Select(b => (BracketViewModel) b)
+                Brackets = tournament.Brackets.OrderByDescending(b => b.Sequence).Select(b => (BracketShortViewModel) b)
             };
         }
     }

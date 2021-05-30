@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using RiichiGang.Service;
+using RiichiGang.Service.InputModel;
+using RiichiGang.WebApi.Extensios;
 using RiichiGang.WebApi.ViewModel;
 
 namespace RiichiGang.WebApi.Controllers
@@ -13,14 +15,23 @@ namespace RiichiGang.WebApi.Controllers
     [ApiController]
     public class TournamentsController : ApiControllerBase
     {
+        private ClubService _clubService;
+        private RulesetService _rulesetService;
         private TournamentService _tournamentService;
+        private UserService _userService;
 
         public TournamentsController(
             ILogger<ApiControllerBase> logger,
-            TournamentService tournamentService
+            ClubService clubService,
+            RulesetService rulesetService,
+            TournamentService tournamentService,
+            UserService userService
         )
             : base(logger)
         {
+            _clubService = clubService;
+            _rulesetService = rulesetService;
+            _userService = userService;
             _tournamentService = tournamentService;
         }
 
@@ -37,9 +48,58 @@ namespace RiichiGang.WebApi.Controllers
                 return Ok(tournaments.Select(t => (TournamentShortViewModel) t));
             });
 
-        // TODO GET {id}
+        [HttpGet("{id}")]
+        [AllowAnonymous]
+        public Task<ActionResult<TournamentViewModel>> GetAsync(int id)
+            => ExecuteAsync<TournamentViewModel>(() =>
+            {
+                var tournament = _tournamentService.GetById(id);
 
-        // TODO POST
+                if (tournament is null)
+                    return NotFound();
+
+                return Ok((TournamentViewModel) tournament);
+            });
+
+        [HttpGet("{id}/brackets/{bracketId}")]
+        [AllowAnonymous]
+        public Task<ActionResult<BracketViewModel>> GetAsync(int id, int bracketId)
+            => ExecuteAsync<BracketViewModel>(() =>
+            {
+                var tournament = _tournamentService.GetById(id);
+
+                if (tournament is null)
+                    return NotFound();
+
+                var bracket = tournament.Brackets?.FirstOrDefault(b => b.Id == bracketId);
+
+                if (bracket is null)
+                    return NotFound();
+
+                return Ok((BracketViewModel) bracket);
+            });
+
+        [HttpPost]
+        [Authorize]
+        public Task<ActionResult<TournamentViewModel>> PostAsync([FromBody] TournamentInputModel inputModel)
+            => ExecuteAsync<TournamentViewModel>(async () =>
+            {
+                var username = User.Username();
+                var user = _userService.GetByUsername(username);
+
+                var ruleset = _rulesetService.GetById(inputModel.RulesetId);
+
+                if (ruleset is null)
+                    return NotFound();
+
+                var club = ruleset.Club;
+
+                if (club?.OwnerId != user.Id)
+                    return Forbid();
+
+                var tournament = await _tournamentService.AddTournamentAsync(inputModel, ruleset, club);
+                return Ok((TournamentViewModel) tournament);
+            });
 
         // TODO PATCH
 

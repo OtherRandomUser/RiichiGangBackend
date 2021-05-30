@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using RiichiGang.Data;
 using RiichiGang.Domain;
 using RiichiGang.Service.InputModel;
@@ -15,6 +16,11 @@ namespace RiichiGang.Service
         {
             _context = context;
         }
+
+        public Ruleset GetById(int id)
+            => _context.Rulesets.AsQueryable()
+                .Include(r => r.Club)
+                .SingleOrDefault(r => r.Id == id);
 
         public async Task<Ruleset> AddRulesetAsync(RulesetInputModel inputModel, Club club)
         {
