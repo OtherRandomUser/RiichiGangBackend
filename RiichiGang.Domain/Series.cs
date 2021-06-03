@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace RiichiGang.Domain
 {
@@ -42,6 +43,72 @@ namespace RiichiGang.Domain
 
             Player4Id = player4?.Id ?? throw new ArgumentNullException("O Jogador 4 não pode ser nulo");
             Player4 = player4;
+        }
+
+        public int FirstPlace()
+        {
+            if (!Games.Any())
+                return 0;
+
+            var game = Games.OrderBy(g => g.PlayedAt).Last();
+            var score = new[]
+            {
+                new
+                {
+                    Player = Player1Id,
+                    Score = game.Player1.RunningTotal
+                },
+                new
+                {
+                    Player = Player2Id,
+                    Score = game.Player2.RunningTotal
+                },
+                new
+                {
+                    Player = Player3Id,
+                    Score = game.Player3.RunningTotal
+                },
+                new
+                {
+                    Player = Player4Id,
+                    Score = game.Player4.RunningTotal
+                }
+            };
+
+            return score.OrderByDescending(s => s.Score).First().Player;
+        }
+
+        public int SecondPlace()
+        {
+            if (!Games.Any())
+                return 0;
+
+            var game = Games.OrderBy(g => g.PlayedAt).Last();
+            var score = new[]
+            {
+                new
+                {
+                    Player = Player1Id,
+                    Score = game.Player1.RunningTotal
+                },
+                new
+                {
+                    Player = Player2Id,
+                    Score = game.Player2.RunningTotal
+                },
+                new
+                {
+                    Player = Player3Id,
+                    Score = game.Player3.RunningTotal
+                },
+                new
+                {
+                    Player = Player4Id,
+                    Score = game.Player4.RunningTotal
+                }
+            };
+
+            return score.OrderByDescending(s => s.Score).Skip(1).First().Player;
         }
     }
 }

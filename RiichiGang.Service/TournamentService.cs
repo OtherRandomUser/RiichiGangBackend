@@ -255,11 +255,6 @@ namespace RiichiGang.Service
 
                     await _context.AddAsync(series);
 
-                    // for (var j = 0; j < firstBracket.GamesPerSeries; j++)
-                    // {
-                    //     var game = new Game(series);
-                    //     await _context.AddAsync(game);
-                    // }
                 }
             }
 
@@ -349,7 +344,7 @@ namespace RiichiGang.Service
             await _context.AddAsync(game);
             await _context.SaveChangesAsync();
 
-            await UpdatePlayerPlacementAsync(series.BracketId);
+            await UpdateBracketAsync(series.BracketId);
 
             await UpdatePlayerStats(series.Player1.Player.UserId, json, p1Seat);
             await UpdatePlayerStats(series.Player2.Player.UserId, json, p2Seat);
@@ -385,15 +380,20 @@ namespace RiichiGang.Service
             return res;
         }
 
-        private Task UpdatePlayerPlacementAsync(int bracketId)
+        private async Task UpdateBracketAsync(int bracketId)
         {
-            var placement = 1;
-            var players = _context.BracketPlayers.AsQueryable()
-                .Where(p => p.BracketId == bracketId)
-                .OrderBy(p => p.Score)
-                .AsEnumerable();
+            // fetch data
+            var bracket = _context.Brackets.AsQueryable()
+                .Include(b => b.Players)
+                    .ThenInclude(p => p.Player)
+                .Include(b => b.Series)
+                    .ThenInclude(s => s.Games)
+                .SingleOrDefault(b => b.Id == bracketId);
 
-            foreach (var player in players)
+            // update the player's placement
+            var placement = 1;
+
+            foreach (var player in bracket.Players.OrderByDescending(p => p.Score))
             {
                 if (player.Placement != placement)
                 {
@@ -404,7 +404,110 @@ namespace RiichiGang.Service
                 placement++;
             }
 
-            return _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
+
+            // check if the bracket endend
+            foreach (var s in bracket.Series)
+            {
+                if (s.Games.Count() < bracket.GamesPerSeries)
+                    return;
+            }
+
+            // advance bracket
+            var tournament = GetById(bracket.TournamentId);
+            var nextBracket = tournament.Brackets
+                .OrderBy(b => b.Sequence)
+                .FirstOrDefault(b => b.Sequence > bracket.Sequence);
+
+            if (nextBracket is null)
+            {
+                // was the last bracket
+                return;
+            }
+
+            var bracketPlayers = new List<BracketPlayer>();
+
+            switch (bracket.WinCondition)
+            {
+            case WinCondition.First:
+                foreach (var s in bracket.Series)
+                {
+                    var id = s.FirstPlace();
+                    var p = bracket.Players.Single(p => p.Id == id);
+
+                    var bracketPlayer = new BracketPlayer(p.Player, nextBracket);
+                    bracketPlayer.Score = p.Score * bracket.FinalScoreMultiplier;
+                    bracketPlayers.Add(bracketPlayer);
+                }
+
+                break;
+
+            case WinCondition.FirstAndSecond:
+                foreach (var s in bracket.Series)
+                {
+                    // first
+                    var id = s.FirstPlace();
+                    var p = bracket.Players.Single(p => p.Id == id);
+
+                    var bracketPlayer = new BracketPlayer(p.Player, nextBracket);
+                    bracketPlayer.Score = p.Score * bracket.FinalScoreMultiplier;
+                    bracketPlayers.Add(bracketPlayer);
+
+                    // second
+                    id = s.SecondPlace();
+                    p = bracket.Players.Single(p => p.Id == id);
+
+                    bracketPlayer = new BracketPlayer(p.Player, nextBracket);
+                    bracketPlayer.Score = p.Score * bracket.FinalScoreMultiplier;
+                    bracketPlayers.Add(bracketPlayer);
+                }
+
+                break;
+
+            case WinCondition.TopX:
+                var count = bracket.NumberOfAdvancing;
+
+                foreach (var p in bracket.Players.OrderByDescending(p => p.Score))
+                {
+                    var bracketPlayer = new BracketPlayer(p.Player, nextBracket);
+                    bracketPlayer.Score = p.Score * bracket.FinalScoreMultiplier;
+                    bracketPlayers.Add(bracketPlayer);
+
+                    count--;
+
+                    if (count <= 0)
+                    {
+                        break;
+                    }
+                }
+
+                break;
+
+            case WinCondition.None:
+                throw new InvalidOperationException("unreachable");
+            }
+
+            await _context.AddRangeAsync(bracketPlayers);
+
+            for (var i = 0; i < nextBracket.NumberOfSeries; i++)
+            {
+                var shuffled = bracketPlayers.OrderBy(_ => Guid.NewGuid()).AsEnumerable();
+
+                while (shuffled.Any())
+                {
+                    var seriesPlayers = shuffled.Take(4).ToList();
+                    shuffled = shuffled.Skip(4); // might be straight up wrong
+
+                    var series = new Series(
+                        nextBracket,
+                        seriesPlayers[0],
+                        seriesPlayers[1],
+                        seriesPlayers[2],
+                        seriesPlayers[3]);
+
+                    await _context.AddAsync(series);
+                }
+            }
         }
 
         private Task UpdatePlayerStats(int userId, JObject log, Seat seat)
