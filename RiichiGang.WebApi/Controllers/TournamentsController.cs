@@ -211,6 +211,7 @@ namespace RiichiGang.WebApi.Controllers
             });
 
         [HttpPost("{id}/init")]
+        [Authorize]
         public Task<ActionResult> InitTournamentAsync(int id)
             => ExecuteAsync(async () =>
             {
@@ -229,6 +230,36 @@ namespace RiichiGang.WebApi.Controllers
                 return Ok();
             });
 
-        // TODO POST {id}/game
+        [HttpPost("{id}/bracket/{bracketId}/series/{seriesId}")]
+        [Authorize]
+        public Task<ActionResult<GameViewModel>> AddGameAsync(
+            int id, int bracketId, int seriesId,
+            [FromBody] GameInputModel inputModel)
+            => ExecuteAsync<GameViewModel>(async () =>
+            {
+                var username = User.Username();
+                var owner = _userService.GetByUsername(username);
+
+                var tournament = _tournamentService.GetById(id);
+
+                if (tournament is null)
+                    return NotFound();
+
+                if (tournament.Club.OwnerId != owner.Id)
+                    return Forbid();
+
+                var bracket = tournament.Brackets.SingleOrDefault(b => b.Id == bracketId);
+
+                if (bracket is null)
+                    return NotFound();
+
+                var series = bracket.Series.FirstOrDefault(s => s.Id == seriesId);
+
+                if (series is null)
+                    return NotFound();
+
+                var game = await _tournamentService.AddGameAsync(bracket, series, inputModel);
+                return Ok((GameViewModel) game);
+            });
     }
 }
