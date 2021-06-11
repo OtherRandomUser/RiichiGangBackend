@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -107,8 +108,8 @@ namespace RiichiGang.WebApi.Controllers
 
         [HttpPost("notifications/{notificationId}/confirm")]
         [Authorize]
-        public Task<ActionResult> ConfirmNotificationAsync(int notificationId)
-            => ExecuteAsync(async () =>
+        public Task<ActionResult<IEnumerable<NotificationViewModel>>> ConfirmNotificationAsync(int notificationId)
+            => ExecuteAsync<IEnumerable<NotificationViewModel>>(async () =>
             {
                 var username = User.Username();
                 var user = _userService.GetByUsername(username);
@@ -128,14 +129,14 @@ namespace RiichiGang.WebApi.Controllers
                 if (notification.TournamentPlayerId.HasValue)
                     await _userService.ConfirmTournamentEntryAsync(user, notification.MembershipId.Value);
 
-                await _userService.DeleteNotificationAsync(notification);
-                return Ok();
+                var notifications = await _userService.DeleteNotificationAsync(notification);
+                return Ok(notifications.Select(n => (NotificationViewModel) n));
             });
 
         [HttpPost("notifications/{notificationId}/deny")]
         [Authorize]
-        public Task<ActionResult> DenyNotificationAsync(int notificationId)
-            => ExecuteAsync(async () =>
+        public Task<ActionResult<IEnumerable<NotificationViewModel>>> DenyNotificationAsync(int notificationId)
+            => ExecuteAsync<IEnumerable<NotificationViewModel>>(async () =>
             {
                 var username = User.Username();
                 var user = _userService.GetByUsername(username);
@@ -155,8 +156,8 @@ namespace RiichiGang.WebApi.Controllers
                 if (notification.TournamentPlayerId.HasValue)
                     await _userService.DenyTournamententryAsync(user, notification.TournamentPlayerId.Value);
 
-                await _userService.DeleteNotificationAsync(notification);
-                return Ok();
+                var notifications = await _userService.DeleteNotificationAsync(notification);
+                return Ok(notifications.Select(n => (NotificationViewModel) n));
             });
     }
 }

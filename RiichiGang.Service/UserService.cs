@@ -180,13 +180,17 @@ namespace RiichiGang.Service
             return _context.SaveChangesAsync();
         }
 
-        public Task DeleteNotificationAsync(Notification notification)
+        public async Task<IEnumerable<Notification>> DeleteNotificationAsync(Notification notification)
         {
             if (notification is null)
                 throw new ArgumentNullException("Notificação não pode ser nula");
 
+            var userId = notification.UserId;
             _context.Remove(notification);
-            return _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
+
+            var user = GetById(userId);
+            return user.Notifications;
         }
     }
 }

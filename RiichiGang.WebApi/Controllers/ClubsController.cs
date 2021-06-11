@@ -113,8 +113,8 @@ namespace RiichiGang.WebApi.Controllers
 
         [HttpPost("{id}/members/invite")]
         [Authorize]
-        public Task<ActionResult> AskInviteAsync(int id)
-            => ExecuteAsync(async () =>
+        public Task<ActionResult<ClubViewModel>> AskInviteAsync(int id)
+            => ExecuteAsync<ClubViewModel>(async () =>
             {
                 var username = User.Username();
                 var user = _userService.GetByUsername(username);
@@ -125,13 +125,13 @@ namespace RiichiGang.WebApi.Controllers
                     return NotFound();
 
                 await _clubService.AskInviteAsync(user, club);
-                return Ok();
+                return Ok((ClubViewModel) _clubService.GetById(id));
             });
 
         [HttpDelete("{id}/members")]
         [Authorize]
-        public Task<ActionResult> QuitAsync(int id)
-            => ExecuteAsync(async () =>
+        public Task<ActionResult<ClubViewModel>> QuitAsync(int id)
+            => ExecuteAsync<ClubViewModel>(async () =>
             {
                 var username = User.Username();
                 var user = _userService.GetByUsername(username);
@@ -142,13 +142,13 @@ namespace RiichiGang.WebApi.Controllers
                     return NotFound();
 
                 await _clubService.QuitAsync(user, club);
-                return Ok();
+                return Ok((ClubViewModel) _clubService.GetById(id));
             });
 
         [HttpDelete("{id}/members/{userId}")]
         [Authorize]
-        public Task<ActionResult> RemoveMemberAsync(int id, int userId)
-            => ExecuteAsync(async () =>
+        public Task<ActionResult<ClubViewModel>> RemoveMemberAsync(int id, int userId)
+            => ExecuteAsync<ClubViewModel>(async () =>
             {
                 var username = User.Username();
                 var owner = _userService.GetByUsername(username);
@@ -167,7 +167,7 @@ namespace RiichiGang.WebApi.Controllers
                     return NotFound();
 
                 await _clubService.QuitAsync(user, club);
-                return Ok();
+                return Ok((ClubViewModel) _clubService.GetById(id));
             });
 
         [HttpGet("{id}/rulesets")]

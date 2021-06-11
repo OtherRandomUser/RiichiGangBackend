@@ -10,6 +10,7 @@ namespace RiichiGang.WebApi.ViewModel
         public UserShortViewModel Creator { get; set; }
         public string Message { get; set; }
         public int? MembershipId { get; set; }
+        public int? TournamentPlayerId { get; set; }
 
         public static implicit operator NotificationViewModel(Notification notification)
         {
@@ -22,7 +23,8 @@ namespace RiichiGang.WebApi.ViewModel
                 CreatedAt = notification.CreatedAt.ToString("dd/MM/yyyy"),
                 Creator = notification.Creator,
                 Message = notification.Message,
-                MembershipId = notification.MembershipId
+                MembershipId = notification.MembershipId,
+                TournamentPlayerId = notification.TournamentPlayerId
             };
         }
     }
