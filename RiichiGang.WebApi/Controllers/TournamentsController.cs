@@ -156,8 +156,8 @@ namespace RiichiGang.WebApi.Controllers
 
         [HttpPost("{id}/players/invite")]
         [Authorize]
-        public Task<ActionResult> AskInviteAsync(int id)
-            => ExecuteAsync(async () =>
+        public Task<ActionResult<TournamentViewModel>> AskInviteAsync(int id)
+            => ExecuteAsync<TournamentViewModel>(async () =>
             {
                 var username = User.Username();
                 var user = _userService.GetByUsername(username);
@@ -168,13 +168,13 @@ namespace RiichiGang.WebApi.Controllers
                     return NotFound();
 
                 await _tournamentService.AskInviteAsync(tournament, user);
-                return Ok();
+                return Ok(new TournamentViewModel(tournament, user));
             });
 
         [HttpDelete("{id}/players")]
         [Authorize]
-        public Task<ActionResult> QuitAsync(int id)
-            => ExecuteAsync(async () =>
+        public Task<ActionResult<TournamentViewModel>> QuitAsync(int id)
+            => ExecuteAsync<TournamentViewModel>(async () =>
             {
                 var username = User.Username();
                 var user = _userService.GetByUsername(username);
@@ -185,13 +185,13 @@ namespace RiichiGang.WebApi.Controllers
                     return NotFound();
 
                 await _tournamentService.QuitAsync(tournament, user);
-                return Ok();
+                return Ok(new TournamentViewModel(tournament, user));
             });
 
         [HttpDelete("{id}/players/{userId}")]
         [Authorize]
-        public Task<ActionResult> RemovePlayerAsync(int id, int userId)
-            => ExecuteAsync(async () =>
+        public Task<ActionResult<TournamentViewModel>> RemovePlayerAsync(int id, int userId)
+            => ExecuteAsync<TournamentViewModel>(async () =>
             {
                 var username = User.Username();
                 var owner = _userService.GetByUsername(username);
@@ -210,13 +210,13 @@ namespace RiichiGang.WebApi.Controllers
                     return NotFound();
 
                 await _tournamentService.QuitAsync(tournament, user);
-                return Ok();
+                return Ok(new TournamentViewModel(tournament, owner));
             });
 
         [HttpPost("{id}/init")]
         [Authorize]
-        public Task<ActionResult> InitTournamentAsync(int id)
-            => ExecuteAsync(async () =>
+        public Task<ActionResult<TournamentViewModel>> InitTournamentAsync(int id)
+            => ExecuteAsync<TournamentViewModel>(async () =>
             {
                 var username = User.Username();
                 var owner = _userService.GetByUsername(username);
@@ -230,7 +230,7 @@ namespace RiichiGang.WebApi.Controllers
                     return Forbid();
 
                 await _tournamentService.InitTournamentAsync(tournament);
-                return Ok();
+                return Ok(new TournamentViewModel(tournament, owner));
             });
 
         [HttpPost("{id}/bracket/{bracketId}/series/{seriesId}")]
