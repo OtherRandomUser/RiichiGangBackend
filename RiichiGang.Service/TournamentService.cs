@@ -27,6 +27,7 @@ namespace RiichiGang.Service
 
         public Tournament GetById(int id)
             => _context.Tournaments.AsQueryable()
+                .Include (t => t.Club)
                 .Include(t => t.Ruleset)
                 .Include(t => t.Players)
                 .Include(t => t.Brackets)
@@ -151,6 +152,16 @@ namespace RiichiGang.Service
             if (tournament.Players.Any(p => p.UserId == user.Id))
                 throw new ArgumentException($"{user.Username} já pediu para participar no torneio \"{tournament.Name}\"");
 
+            if (!tournament.AllowNonMembers && tournament.Club.OwnerId == user.Id)
+            {
+                var club = _context.Clubs
+                    .Include(c => c.Members)
+                    .Single(c => c.Id == tournament.ClubId);
+
+                if (!club.Members.Any(m => m.UserId == user.Id))
+                    throw new Exception("Torneio não permite jogadores de fora do clube");
+            }
+
             if (!tournament.RequirePermission || tournament.Club.OwnerId == user.Id)
             {
                 var player = new TournamentPlayer(user, tournament, TournamentPlayerStatus.Confirmed);
@@ -227,6 +238,8 @@ namespace RiichiGang.Service
             }
 
             var firstBracket = brackets.First();
+            firstBracket.StartedAt = DateTime.UtcNow;
+            _context.Update(firstBracket);
             var bracketPlayers = new List<BracketPlayer>();
 
             foreach (var player in tournament.Players)
@@ -404,14 +417,18 @@ namespace RiichiGang.Service
                 placement++;
             }
 
-            await _context.SaveChangesAsync();
-
             // check if the bracket endend
             foreach (var s in bracket.Series)
             {
                 if (s.Games.Count() < bracket.GamesPerSeries)
+                {
+                    await _context.SaveChangesAsync();
                     return;
+                }
             }
+
+            bracket.FinishedAt = DateTime.UtcNow;
+            _context.Update(bracket);
 
             // advance bracket
             var tournament = GetById(bracket.TournamentId);
@@ -425,6 +442,7 @@ namespace RiichiGang.Service
                 return;
             }
 
+            nextBracket.StartedAt = DateTime.UtcNow;
             var bracketPlayers = new List<BracketPlayer>();
 
             switch (bracket.WinCondition)
@@ -508,6 +526,8 @@ namespace RiichiGang.Service
                     await _context.AddAsync(series);
                 }
             }
+
+            await _context.SaveChangesAsync();
         }
 
         private Task UpdatePlayerStats(int userId, JObject log, Seat seat)

@@ -14,7 +14,7 @@ namespace RiichiGang.WebApi.ViewModel
         public StatsViewModel Stats { get; set; }
         public IEnumerable<ClubShortViewModel> OwnedClubs { get; set; }
         public IEnumerable<MembershipViewModel> Memberships { get; set; }
-        public IEnumerable<TournamentViewModel> Tournaments { get; set; }
+        public IEnumerable<TournamentShortViewModel> Tournaments { get; set; }
         public IEnumerable<NotificationViewModel> Notifications { get; set; }
 
         public static implicit operator UserViewModel(User user)
@@ -31,7 +31,7 @@ namespace RiichiGang.WebApi.ViewModel
                 Stats = user.Stats,
                 OwnedClubs = user.OwnedClubs?.Select(c => (ClubShortViewModel) c),
                 Memberships = user.Memberships?.Select(m => (MembershipViewModel) m),
-                Tournaments = user.Tournaments?.Select(t => (TournamentViewModel) t),
+                Tournaments = user.Tournaments?.Select(t => (TournamentShortViewModel) t),
                 Notifications = user.Notifications?.Select(n => (NotificationViewModel) n)
             };
         }

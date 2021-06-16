@@ -9,6 +9,8 @@ namespace RiichiGang.Domain
         public int TournamentId { get; protected set; }
 
         public int Sequence { get; set; }
+        public DateTime? StartedAt { get; set; }
+        public DateTime? FinishedAt { get; set; }
         public string Name { get; protected set; }
         public WinCondition WinCondition { get; protected set; }
         public int NumberOfAdvancing { get; protected set; }

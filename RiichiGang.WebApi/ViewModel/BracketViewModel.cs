@@ -8,6 +8,8 @@ namespace RiichiGang.WebApi.ViewModel
     {
         public int Id { get; set; }
         public string CreatedAt { get; set; }
+        public string StartedAt { get; set; }
+        public string FinishedAt { get; set; }
         public int Sequence { get; set; }
         public string Description { get; set; }
         public IEnumerable<SeriesViewModel> Series { get; set; }
@@ -64,6 +66,8 @@ namespace RiichiGang.WebApi.ViewModel
             {
                 Id = bracket.Id,
                 CreatedAt = bracket.CreatedAt.ToString("dd/MM/yyyy"),
+                StartedAt = bracket.StartedAt?.ToString("dd/MM/yyyy"),
+                FinishedAt = bracket.FinishedAt?.ToString("dd/MM/yyyy"),
                 Sequence = bracket.Sequence,
                 Description = $"{winCon} {gameDescr}",
                 Series = bracket.Series.Select(s => (SeriesViewModel) s)

@@ -6,7 +6,7 @@ namespace RiichiGang.WebApi.ViewModel
     public class RulesetViewModel
     {
         public int Id { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public string CreatedAt { get; set; }
         public string Name { get; set; }
         public int Mochiten { get; set; }
         public int Genten { get; set; }
@@ -49,7 +49,7 @@ namespace RiichiGang.WebApi.ViewModel
             return new RulesetViewModel
             {
                 Id = ruleset.Id,
-                CreatedAt = ruleset.CreatedAt,
+                CreatedAt = ruleset.CreatedAt.ToString("dd/MM/yyyy"),
                 Name = ruleset.Name,
                 Mochiten = ruleset.Mochiten,
                 Genten = ruleset.Genten,

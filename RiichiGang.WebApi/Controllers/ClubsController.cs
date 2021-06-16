@@ -186,6 +186,24 @@ namespace RiichiGang.WebApi.Controllers
                 return Ok(club.Rulesets.Select(r => (RulesetViewModel) r));
             });
 
+        [HttpGet("{id}/rulesets/{rulesetId}")]
+        [AllowAnonymous]
+        public Task<ActionResult<RulesetViewModel>> GetRulesetAsync(int id, int rulesetId)
+            => ExecuteAsync<RulesetViewModel>(() =>
+            {
+                var club = _clubService.GetById(id);
+
+                if (club is null)
+                    return NotFound();
+
+                if (!club.Rulesets.Any())
+                    return NoContent();
+
+                var ruleset = club.Rulesets.SingleOrDefault(r => r.Id == rulesetId);
+
+                return Ok((RulesetViewModel) ruleset);
+            });
+
         [HttpPost("{id}/rulesets")]
         [Authorize]
         public Task<ActionResult<RulesetViewModel>> PostRulesetAsync(int id, [FromBody] RulesetInputModel inputModel)

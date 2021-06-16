@@ -53,12 +53,15 @@ namespace RiichiGang.WebApi.Controllers
         public Task<ActionResult<TournamentViewModel>> GetAsync(int id)
             => ExecuteAsync<TournamentViewModel>(() =>
             {
+                var username = User.Username();
+                var user = _userService.GetByUsername(username);
+
                 var tournament = _tournamentService.GetById(id);
 
                 if (tournament is null)
                     return NotFound();
 
-                return Ok((TournamentViewModel) tournament);
+                return Ok(new TournamentViewModel(tournament, user));
             });
 
         [HttpGet("{id}/brackets/{bracketId}")]
@@ -98,7 +101,7 @@ namespace RiichiGang.WebApi.Controllers
                     return Forbid();
 
                 var tournament = await _tournamentService.AddTournamentAsync(inputModel, ruleset, club);
-                return Ok((TournamentViewModel) tournament);
+                return Ok(new TournamentViewModel(tournament, user));
             });
 
         [HttpPut("{id}")]
@@ -128,7 +131,7 @@ namespace RiichiGang.WebApi.Controllers
                     return Forbid();
 
                 tournament = await _tournamentService.UpdateTournamentAsync(tournament, inputModel, ruleset);
-                return Ok((TournamentViewModel) tournament);
+                return Ok(new TournamentViewModel(tournament, user));
             });
 
         [HttpDelete("{id}")]

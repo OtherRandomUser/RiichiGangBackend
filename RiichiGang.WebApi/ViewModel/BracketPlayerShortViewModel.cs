@@ -4,6 +4,7 @@ namespace RiichiGang.WebApi.ViewModel
 {
     public class BracketPlayerShortViewModel
     {
+        public int UserId { get; set; }
         public string Name { get; set; }
         public int Placement { get; set; }
         public float Score { get; set; }
@@ -15,6 +16,7 @@ namespace RiichiGang.WebApi.ViewModel
 
             return new BracketPlayerShortViewModel
             {
+                UserId = player.Player.UserId,
                 Name = player.Player.User.Username,
                 Placement = player.Placement,
                 Score = player.Score
