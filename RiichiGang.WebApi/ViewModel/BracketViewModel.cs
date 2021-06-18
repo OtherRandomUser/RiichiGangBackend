@@ -7,6 +7,7 @@ namespace RiichiGang.WebApi.ViewModel
     public class BracketViewModel
     {
         public int Id { get; set; }
+        public string Name { get; set; }
         public string CreatedAt { get; set; }
         public string StartedAt { get; set; }
         public string FinishedAt { get; set; }
@@ -65,6 +66,7 @@ namespace RiichiGang.WebApi.ViewModel
             return new BracketViewModel
             {
                 Id = bracket.Id,
+                Name = bracket.Name,
                 CreatedAt = bracket.CreatedAt.ToString("dd/MM/yyyy"),
                 StartedAt = bracket.StartedAt?.ToString("dd/MM/yyyy"),
                 FinishedAt = bracket.FinishedAt?.ToString("dd/MM/yyyy"),
