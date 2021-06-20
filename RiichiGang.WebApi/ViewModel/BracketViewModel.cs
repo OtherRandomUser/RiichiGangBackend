@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using RiichiGang.Domain;
@@ -7,6 +8,8 @@ namespace RiichiGang.WebApi.ViewModel
     public class BracketViewModel
     {
         public int Id { get; set; }
+        public int TournamentId { get; set; }
+        public int OwnerId { get; set; }
         public string Name { get; set; }
         public string CreatedAt { get; set; }
         public string StartedAt { get; set; }
@@ -15,10 +18,13 @@ namespace RiichiGang.WebApi.ViewModel
         public string Description { get; set; }
         public IEnumerable<SeriesViewModel> Series { get; set; }
 
-        public static implicit operator BracketViewModel(Bracket bracket)
+        public BracketViewModel(Bracket bracket, Tournament tournament)
         {
             if (bracket is null)
-                return null;
+                throw new ArgumentNullException(nameof(bracket));
+
+            if (tournament is null)
+                throw new ArgumentNullException(nameof(tournament));
 
             var winCon = "";
 
@@ -63,17 +69,16 @@ namespace RiichiGang.WebApi.ViewModel
                 gameDescr += $"{bracket.GamesPerSeries} jogos.";
             }
 
-            return new BracketViewModel
-            {
-                Id = bracket.Id,
-                Name = bracket.Name,
-                CreatedAt = bracket.CreatedAt.ToString("dd/MM/yyyy"),
-                StartedAt = bracket.StartedAt?.ToString("dd/MM/yyyy"),
-                FinishedAt = bracket.FinishedAt?.ToString("dd/MM/yyyy"),
-                Sequence = bracket.Sequence,
-                Description = $"{winCon} {gameDescr}",
-                Series = bracket.Series.Select(s => (SeriesViewModel) s)
-            };
+            Id = bracket.Id;
+            TournamentId = bracket.TournamentId;
+            OwnerId = tournament.Club.OwnerId;
+            Name = bracket.Name;
+            CreatedAt = bracket.CreatedAt.ToString("dd/MM/yyyy");
+            StartedAt = bracket.StartedAt?.ToString("dd/MM/yyyy");
+            FinishedAt = bracket.FinishedAt?.ToString("dd/MM/yyyy");
+            Sequence = bracket.Sequence;
+            Description = $"{winCon} {gameDescr}";
+            Series = bracket.Series.Select(s => (SeriesViewModel) s);
         }
     }
 }

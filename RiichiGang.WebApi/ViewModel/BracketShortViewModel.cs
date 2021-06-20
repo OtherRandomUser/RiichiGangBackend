@@ -7,6 +7,7 @@ namespace RiichiGang.WebApi.ViewModel
     public class BracketShortViewModel
     {
         public int Id { get; set; }
+        public int TournamentId { get; set; }
         public int Sequence { get; set; }
         public string Name { get; set; }
         public string CreatedAt { get; set; }
@@ -27,6 +28,7 @@ namespace RiichiGang.WebApi.ViewModel
             return new BracketShortViewModel
             {
                 Id = bracket.Id,
+                TournamentId = bracket.TournamentId,
                 Name = bracket.Name,
                 CreatedAt = bracket.CreatedAt.ToString("dd/MM/yyyy"),
                 StartedAt = bracket.StartedAt?.ToString("dd/MM/yyyy"),

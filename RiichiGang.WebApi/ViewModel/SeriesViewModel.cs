@@ -6,6 +6,7 @@ namespace RiichiGang.WebApi.ViewModel
 {
     public class SeriesViewModel
     {
+        public int Id { get; set; }
         public string Player1Name { get; set; }
         public string Player2Name { get; set; }
         public string Player3Name { get; set; }
@@ -35,6 +36,7 @@ namespace RiichiGang.WebApi.ViewModel
 
             return new SeriesViewModel
             {
+                Id = series.Id,
                 Player1Name = series.Player1.Player.User.Username,
                 Player2Name = series.Player2.Player.User.Username,
                 Player3Name = series.Player3.Player.User.Username,

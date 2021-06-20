@@ -79,7 +79,7 @@ namespace RiichiGang.WebApi.Controllers
                 if (bracket is null)
                     return NotFound();
 
-                return Ok((BracketViewModel) bracket);
+                return Ok(new BracketViewModel(bracket, tournament));
             });
 
         [HttpPost]
@@ -235,10 +235,10 @@ namespace RiichiGang.WebApi.Controllers
 
         [HttpPost("{id}/bracket/{bracketId}/series/{seriesId}")]
         [Authorize]
-        public Task<ActionResult<GameViewModel>> AddGameAsync(
+        public Task<ActionResult<BracketViewModel>> AddGameAsync(
             int id, int bracketId, int seriesId,
             [FromBody] GameInputModel inputModel)
-            => ExecuteAsync<GameViewModel>(async () =>
+            => ExecuteAsync<BracketViewModel>(async () =>
             {
                 var username = User.Username();
                 var owner = _userService.GetByUsername(username);
@@ -261,8 +261,12 @@ namespace RiichiGang.WebApi.Controllers
                 if (series is null)
                     return NotFound();
 
-                var game = await _tournamentService.AddGameAsync(bracket, series, inputModel);
-                return Ok((GameViewModel) game);
+                await _tournamentService.AddGameAsync(bracket, series, inputModel);
+
+                tournament = _tournamentService.GetById(id);
+                bracket = tournament.Brackets.SingleOrDefault(b => b.Id == bracketId);
+
+                return Ok(new BracketViewModel(bracket, tournament));
             });
     }
 }
