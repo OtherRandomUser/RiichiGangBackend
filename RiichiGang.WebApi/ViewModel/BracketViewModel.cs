@@ -74,11 +74,11 @@ namespace RiichiGang.WebApi.ViewModel
             OwnerId = tournament.Club.OwnerId;
             Name = bracket.Name;
             CreatedAt = bracket.CreatedAt.ToString("dd/MM/yyyy");
-            StartedAt = bracket.StartedAt?.ToString("dd/MM/yyyy");
-            FinishedAt = bracket.FinishedAt?.ToString("dd/MM/yyyy");
+            StartedAt = bracket.StartedAt?.ToString("dd/MM/yyyy") ?? "";
+            FinishedAt = bracket.FinishedAt?.ToString("dd/MM/yyyy") ?? "";
             Sequence = bracket.Sequence;
             Description = $"{winCon} {gameDescr}";
-            Series = bracket.Series.Select(s => (SeriesViewModel) s);
+            Series = bracket.Series.Select(s => new SeriesViewModel(s, bracket.GamesPerSeries));
         }
     }
 }

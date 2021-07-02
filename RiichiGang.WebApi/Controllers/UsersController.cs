@@ -100,6 +100,8 @@ namespace RiichiGang.WebApi.Controllers
             {
                 var user = _userService.GetById(id);
 
+                _logger.LogInformation($"tournament count {user.Tournaments.Count()}");
+
                 if (user is null)
                     return NotFound("Usuário não encontrado");
 
@@ -114,6 +116,8 @@ namespace RiichiGang.WebApi.Controllers
                 var username = User.Username();
                 var user = _userService.GetByUsername(username);
 
+                _logger.LogInformation("batata");
+
                 if (user is null)
                     return NotFound();
 
@@ -124,10 +128,10 @@ namespace RiichiGang.WebApi.Controllers
                     return NotFound();
 
                 if (notification.MembershipId.HasValue)
-                    await _userService.ConfirmMembershipAsync(user, notification.TournamentPlayerId.Value);
+                    await _userService.ConfirmMembershipAsync(notification.Creator, notification.MembershipId.Value);
 
                 if (notification.TournamentPlayerId.HasValue)
-                    await _userService.ConfirmTournamentEntryAsync(user, notification.MembershipId.Value);
+                    await _userService.ConfirmTournamentEntryAsync(notification.Creator, notification.TournamentPlayerId.Value);
 
                 var notifications = await _userService.DeleteNotificationAsync(notification);
                 return Ok(notifications.Select(n => (NotificationViewModel) n));
@@ -151,10 +155,10 @@ namespace RiichiGang.WebApi.Controllers
                     return NotFound();
 
                 if (notification.MembershipId.HasValue)
-                    await _userService.DenyMembershipAsync(user, notification.MembershipId.Value);
+                    await _userService.DenyMembershipAsync(notification.Creator, notification.MembershipId.Value);
 
                 if (notification.TournamentPlayerId.HasValue)
-                    await _userService.DenyTournamententryAsync(user, notification.TournamentPlayerId.Value);
+                    await _userService.DenyTournamententryAsync(notification.Creator, notification.TournamentPlayerId.Value);
 
                 var notifications = await _userService.DeleteNotificationAsync(notification);
                 return Ok(notifications.Select(n => (NotificationViewModel) n));

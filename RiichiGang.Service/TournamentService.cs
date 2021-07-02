@@ -28,10 +28,14 @@ namespace RiichiGang.Service
         public Tournament GetById(int id)
             => _context.Tournaments.AsQueryable()
                 .Include (t => t.Club)
+                    .ThenInclude(c => c.Owner)
                 .Include(t => t.Ruleset)
                 .Include(t => t.Players)
+                    .ThenInclude(p => p.User)
                 .Include(t => t.Brackets)
                     .ThenInclude(b => b.Players)
+                        .ThenInclude(p => p.Player)
+                            .ThenInclude(p => p.User)
                 .Include(t => t.Brackets)
                     .ThenInclude(b => b.Series)
                         .ThenInclude(s => s.Games)
@@ -158,8 +162,8 @@ namespace RiichiGang.Service
                     .Include(c => c.Members)
                     .Single(c => c.Id == tournament.ClubId);
 
-                if (!club.Members.Any(m => m.UserId == user.Id))
-                    throw new Exception("Torneio não permite jogadores de fora do clube");
+                if (!club.Members.Any(m => m.UserId == user.Id) && tournament.Club.OwnerId != user.Id)
+                    throw new ArgumentException("Torneio não permite jogadores de fora do clube");
             }
 
             if (!tournament.RequirePermission || tournament.Club.OwnerId == user.Id)
@@ -172,7 +176,7 @@ namespace RiichiGang.Service
                 var player = new TournamentPlayer(user, tournament, TournamentPlayerStatus.Pending);
                 await _context.AddAsync(player);
 
-                var notification = new Notification($"pediu para participar no torneio \"{tournament.Name}\"", tournament.Club.Owner, user, null, player);
+                var notification = new Notification($"pediu para participar no torneio \"{tournament.Name}\"", user, tournament.Club.Owner, null, player);
                 await _context.AddAsync(notification);
             }
 
@@ -355,6 +359,19 @@ namespace RiichiGang.Service
             };
 
             await _context.AddAsync(game);
+
+            series.Player1.Score += p1EndScore;
+            await _context.AddAsync(series.Player1);
+
+            series.Player2.Score += p2EndScore;
+            await _context.AddAsync(series.Player2);
+
+            series.Player3.Score += p3EndScore;
+            await _context.AddAsync(series.Player3);
+
+            series.Player4.Score += p4EndScore;
+            await _context.AddAsync(series.Player4);
+
             await _context.SaveChangesAsync();
 
             await UpdateBracketAsync(series.BracketId);

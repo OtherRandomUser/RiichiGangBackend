@@ -50,6 +50,7 @@ namespace RiichiGang.WebApi
             services.AddScoped<ClubService>();
             services.AddScoped<RulesetService>();
             services.AddScoped<UserService>();
+            services.AddScoped<TournamentService>();
 
             // Add ASP.NET Core Services
             services.AddCors(options =>

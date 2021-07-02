@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using RiichiGang.Domain;
@@ -17,35 +18,35 @@ namespace RiichiGang.WebApi.ViewModel
 
         public IEnumerable<GameViewModel> Games { get; set; }
 
-        public static implicit operator SeriesViewModel(Series series)
+        public SeriesViewModel(Series series, int expectedGames)
         {
             if (series is null)
-                return null;
+                throw new ArgumentNullException(nameof(series));
 
             var games = series.Games.Select(g => (GameViewModel) g);
 
-            var playedAt = games.FirstOrDefault().PlayedAt;
-            var finishedAt = games.LastOrDefault().PlayedAt;
+            var playedAt = games.FirstOrDefault()?.PlayedAt ?? "";
+            var finishedAt = "";
+
+            if (series.Games.Count() == expectedGames)
+                finishedAt = games.Last().PlayedAt;
             var status = "Agendada";
 
-            if (playedAt != null)
+            if (playedAt != "")
                 status = "Em Andamento";
 
-            if (finishedAt != null)
+            if (finishedAt != "")
                 status = "Encerrada";
 
-            return new SeriesViewModel
-            {
-                Id = series.Id,
-                Player1Name = series.Player1.Player.User.Username,
-                Player2Name = series.Player2.Player.User.Username,
-                Player3Name = series.Player3.Player.User.Username,
-                Player4Name = series.Player4.Player.User.Username,
-                PlayedAt = playedAt,
-                FinishedAt = finishedAt,
-                Status = status,
-                Games = games
-            };
+            Id = series.Id;
+            Player1Name = series.Player1.Player.User.Username;
+            Player2Name = series.Player2.Player.User.Username;
+            Player3Name = series.Player3.Player.User.Username;
+            Player4Name = series.Player4.Player.User.Username;
+            PlayedAt = playedAt;
+            FinishedAt = finishedAt;
+            Status = status;
+            Games = games;
         }
     }
 }

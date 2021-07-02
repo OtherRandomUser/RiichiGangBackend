@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using RiichiGang.WebApi.Extensios;
 
 namespace RiichiGang.WebApi
 {
@@ -13,7 +14,10 @@ namespace RiichiGang.WebApi
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            CreateHostBuilder(args)
+                .Build()
+                .Seed()
+                .Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

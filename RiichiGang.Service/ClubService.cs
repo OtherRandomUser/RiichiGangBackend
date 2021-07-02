@@ -30,6 +30,7 @@ namespace RiichiGang.Service
             => _context.Clubs.AsQueryable()
                 .Include(c => c.Owner)
                 .Include(c => c.Members)
+                    .ThenInclude(m => m.User)
                 .Include(c => c.Tournaments)
                 .Include(c => c.Rulesets)
                 .SingleOrDefault(c => c.Id == clubId);
@@ -112,7 +113,7 @@ namespace RiichiGang.Service
             var membership = new Membership(user, club);
             await _context.AddAsync(membership);
 
-            var notification = new Notification($"pediu para participar do seu clube \"{club.Name}\"", club.Owner, user, membership, null);
+            var notification = new Notification($"pediu para participar do seu clube \"{club.Name}\"", user, club.Owner, membership, null);
             await _context.AddAsync(notification);
 
             await _context.SaveChangesAsync();

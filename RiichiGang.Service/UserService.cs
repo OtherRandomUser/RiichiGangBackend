@@ -24,7 +24,9 @@ namespace RiichiGang.Service
                 .Include(u => u.Memberships)
                     .ThenInclude(m => m.Club)
                 .Include(u => u.Tournaments)
+                    .ThenInclude(t => t.Tournament)
                 .Include(u => u.Notifications)
+                    .ThenInclude(n => n.Creator)
                 .SingleOrDefault(u => u.Id == id);
 
         public User GetByUsername(string username)
@@ -33,7 +35,9 @@ namespace RiichiGang.Service
                 .Include(u => u.Memberships)
                     .ThenInclude(m => m.Club)
                 .Include(u => u.Tournaments)
+                    .ThenInclude(t => t.Tournament)
                 .Include(u => u.Notifications)
+                    .ThenInclude(n => n.Creator)
                 .SingleOrDefault(u => u.Username == username);
 
         public User GetByEmail(string email)
@@ -42,7 +46,9 @@ namespace RiichiGang.Service
                 .Include(u => u.Memberships)
                     .ThenInclude(m => m.Club)
                 .Include(u => u.Tournaments)
+                    .ThenInclude(t => t.Tournament)
                 .Include(u => u.Notifications)
+                    .ThenInclude(n => n.Creator)
                 .SingleOrDefault(u => u.Email == email);
 
         public IEnumerable<User> GetUsers(Func<User, bool> predicate)
@@ -51,7 +57,9 @@ namespace RiichiGang.Service
                 .Include(u => u.Memberships)
                     .ThenInclude(m => m.Club)
                 .Include(u => u.Tournaments)
+                    .ThenInclude(t => t.Tournament)
                 .Include(u => u.Notifications)
+                    .ThenInclude(n => n.Creator)
                 .Where(predicate)
                 .AsEnumerable();
 

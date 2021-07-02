@@ -55,6 +55,7 @@ namespace RiichiGang.WebApi.ViewModel
             AllowNonMembers = tournament.AllowNonMembers;
             RequirePermission = tournament.RequirePermission;
             Ruleset = tournament.Ruleset;
+            Players = tournament.Players.Select(p => (TournamentPlayerViewModel) p);
             Brackets = tournament.Brackets.OrderByDescending(b => b.Sequence).Select(b => (BracketShortViewModel) b);
 
             if (user is null)

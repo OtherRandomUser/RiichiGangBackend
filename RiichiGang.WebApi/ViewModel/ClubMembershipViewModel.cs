@@ -5,6 +5,7 @@ namespace RiichiGang.WebApi.ViewModel
 {
     public class ClubMembershipViewModel
     {
+        public int Id { get; set; }
         public string CreatedAt { get; set; }
         public UserShortViewModel User { get; set; }
         public bool Approved { get; set; }
@@ -18,6 +19,7 @@ namespace RiichiGang.WebApi.ViewModel
 
             return new ClubMembershipViewModel
             {
+                Id = membership.UserId,
                 CreatedAt = membership.CreatedAt.ToString("dd/MM/yyyy"),
                 User = membership.User,
                 Approved = membership.Status == MembershipStatus.Confirmed,

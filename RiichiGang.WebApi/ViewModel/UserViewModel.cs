@@ -31,7 +31,7 @@ namespace RiichiGang.WebApi.ViewModel
                 Stats = user.Stats,
                 OwnedClubs = user.OwnedClubs?.Select(c => (ClubShortViewModel) c),
                 Memberships = user.Memberships?.Select(m => (MembershipViewModel) m),
-                Tournaments = user.Tournaments?.Select(t => (TournamentShortViewModel) t),
+                Tournaments = user.Tournaments?.Select(t => (TournamentShortViewModel) t.Tournament),
                 Notifications = user.Notifications?.Select(n => (NotificationViewModel) n)
             };
         }

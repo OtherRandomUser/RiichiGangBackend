@@ -12,7 +12,7 @@ namespace RiichiGang.Domain
 
         public IEnumerable<Club> OwnedClubs { get; protected set; }
         public IEnumerable<Membership> Memberships { get; protected set; }
-        public IEnumerable<Tournament> Tournaments { get; protected set; }
+        public IEnumerable<TournamentPlayer> Tournaments { get; protected set; }
         public IEnumerable<Notification> Notifications { get; protected set; }
 
         private User()
@@ -28,7 +28,7 @@ namespace RiichiGang.Domain
 
             OwnedClubs = new List<Club>();
             Memberships = new List<Membership>();
-            Tournaments = new List<Tournament>();
+            Tournaments = new List<TournamentPlayer>();
             Notifications = new List<Notification>();
         }
 

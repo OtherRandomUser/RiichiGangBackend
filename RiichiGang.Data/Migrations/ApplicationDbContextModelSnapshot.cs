@@ -32,6 +32,9 @@ namespace RiichiGang.Data.Migrations
                     b.Property<float>("FinalScoreMultiplier")
                         .HasColumnType("float");
 
+                    b.Property<DateTime?>("FinishedAt")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<int>("GamesPerSeries")
                         .HasColumnType("int");
 
@@ -46,6 +49,9 @@ namespace RiichiGang.Data.Migrations
 
                     b.Property<int>("Sequence")
                         .HasColumnType("int");
+
+                    b.Property<DateTime?>("StartedAt")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int>("TournamentId")
                         .HasColumnType("int");
@@ -136,9 +142,6 @@ namespace RiichiGang.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int?>("BracketId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
@@ -158,8 +161,6 @@ namespace RiichiGang.Data.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BracketId");
 
                     b.HasIndex("SeriesId");
 
@@ -217,6 +218,9 @@ namespace RiichiGang.Data.Migrations
                     b.Property<string>("Message")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
+                    b.Property<int?>("TournamentPlayerId")
+                        .HasColumnType("int");
+
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
@@ -225,6 +229,8 @@ namespace RiichiGang.Data.Migrations
                     b.HasIndex("CreatorId");
 
                     b.HasIndex("MembershipId");
+
+                    b.HasIndex("TournamentPlayerId");
 
                     b.HasIndex("UserId");
 
@@ -359,7 +365,7 @@ namespace RiichiGang.Data.Migrations
                     b.Property<bool>("AllowNonMembers")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<int?>("ClubId")
+                    b.Property<int>("ClubId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
@@ -497,10 +503,6 @@ namespace RiichiGang.Data.Migrations
 
             modelBuilder.Entity("RiichiGang.Domain.Game", b =>
                 {
-                    b.HasOne("RiichiGang.Domain.Bracket", null)
-                        .WithMany("Games")
-                        .HasForeignKey("BracketId");
-
                     b.HasOne("RiichiGang.Domain.Series", "Series")
                         .WithMany("Games")
                         .HasForeignKey("SeriesId")
@@ -635,6 +637,10 @@ namespace RiichiGang.Data.Migrations
                         .WithMany()
                         .HasForeignKey("MembershipId");
 
+                    b.HasOne("RiichiGang.Domain.TournamentPlayer", "TournamentPlayer")
+                        .WithMany()
+                        .HasForeignKey("TournamentPlayerId");
+
                     b.HasOne("RiichiGang.Domain.User", "User")
                         .WithMany("Notifications")
                         .HasForeignKey("UserId")
@@ -654,7 +660,7 @@ namespace RiichiGang.Data.Migrations
             modelBuilder.Entity("RiichiGang.Domain.Series", b =>
                 {
                     b.HasOne("RiichiGang.Domain.Bracket", "Bracket")
-                        .WithMany()
+                        .WithMany("Series")
                         .HasForeignKey("BracketId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -686,9 +692,11 @@ namespace RiichiGang.Data.Migrations
 
             modelBuilder.Entity("RiichiGang.Domain.Tournament", b =>
                 {
-                    b.HasOne("RiichiGang.Domain.Club", null)
+                    b.HasOne("RiichiGang.Domain.Club", "Club")
                         .WithMany("Tournaments")
-                        .HasForeignKey("ClubId");
+                        .HasForeignKey("ClubId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("RiichiGang.Domain.Ruleset", "Ruleset")
                         .WithMany()

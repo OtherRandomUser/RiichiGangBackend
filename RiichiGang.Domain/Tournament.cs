@@ -33,6 +33,9 @@ namespace RiichiGang.Domain
             SetRuleset(ruleset);
             SetClub(club);
 
+            AllowNonMembers = false;
+            RequirePermission = false;
+
             Status = TournamentStatus.Scheduled;
             StartDate = startDate;
 
