@@ -16,7 +16,7 @@ namespace RiichiGang.Domain
         public int NumberOfAdvancing { get; protected set; }
         public int NumberOfSeries { get; protected set; }
         public int GamesPerSeries { get; protected set; }
-        public float FinalScoreMultiplier { get; protected set; }
+        public float FinalScoreMultiplier { get; set; }
 
         public IEnumerable<BracketPlayer> Players { get; protected set; }
         public IEnumerable<Series> Series { get; protected set; }
@@ -41,6 +41,7 @@ namespace RiichiGang.Domain
                 throw new ArgumentException("A sequência deve ser maior que zero");
 
             SetName(name);
+            Sequence = sequence;
             SetWinCondition(winCondition, numberOfAdvancing);
             SetStructure(numberOfSeries, gamesPerSeries);
 

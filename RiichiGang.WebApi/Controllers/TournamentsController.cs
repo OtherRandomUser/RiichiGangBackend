@@ -233,7 +233,7 @@ namespace RiichiGang.WebApi.Controllers
                 return Ok(new TournamentViewModel(tournament, owner));
             });
 
-        [HttpPost("{id}/bracket/{bracketId}/series/{seriesId}")]
+        [HttpPost("{id}/brackets/{bracketId}/series/{seriesId}")]
         [Authorize]
         public Task<ActionResult<BracketViewModel>> AddGameAsync(
             int id, int bracketId, int seriesId,

@@ -310,6 +310,40 @@ namespace RiichiGang.WebApi.Extensios
 
                         var brackbb = new Bracket(tournb, "Chave B", 20, WinCondition.None, 0, 1, 1);
                         context.Brackets.Add(brackbb);
+
+                        // seed tournament b
+                        var tournc = new Tournament("Tournament C", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent metus nisi, dictum varius lectus nec, blandit ultricies risus. Quisque imperdiet velit at viverra faucibus. Donec aliquam mi ac mattis ultrices. Nullam vulputate dignissim mollis. Suspendisse eu congue lectus. Etiam porta tincidunt lacinia. Nam laoreet interdum dui nec imperdiet. Sed commodo. ", rulbb, clubb, DateTime.UtcNow)
+                        {
+                            Status = TournamentStatus.Scheduled
+                        };
+                        context.Tournaments.Add(tournc);
+
+                        var tourncp = new List<TournamentPlayer>
+                        {
+                            new TournamentPlayer(kobayashi, tournc, TournamentPlayerStatus.Confirmed),
+                            new TournamentPlayer(sasaki, tournc, TournamentPlayerStatus.Confirmed),
+                            new TournamentPlayer(katsumata, tournc, TournamentPlayerStatus.Confirmed),
+                            new TournamentPlayer(shiratori, tournc, TournamentPlayerStatus.Confirmed),
+                            new TournamentPlayer(maruyama, tournc, TournamentPlayerStatus.Confirmed),
+                            new TournamentPlayer(furuhashi, tournc, TournamentPlayerStatus.Confirmed),
+                            new TournamentPlayer(kurosawa, tournc, TournamentPlayerStatus.Confirmed),
+                            new TournamentPlayer(fujisaki, tournc, TournamentPlayerStatus.Confirmed)
+                        };
+
+                        context.TournamentPlayers.AddRange(tourncp);
+
+                        var brackca = new Bracket(tournc, "Chave A", 10, WinCondition.FirstAndSecond, 4, 1, 1)
+                        {
+                            Sequence = 0,
+                            FinalScoreMultiplier = 0.5f
+                        };
+                        context.Brackets.Add(brackca);
+
+                        var brackcb = new Bracket(tournc, "Chave B", 20, WinCondition.None, 0, 1, 1)
+                        {
+                            Sequence = 10
+                        };
+                        context.Brackets.Add(brackcb);
                     }
 
                     context.SaveChanges();

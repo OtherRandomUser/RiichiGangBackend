@@ -29,9 +29,12 @@ namespace RiichiGang.Service
         public Club GetById(int clubId)
             => _context.Clubs.AsQueryable()
                 .Include(c => c.Owner)
+                    .ThenInclude(o => o.Tournaments)
                 .Include(c => c.Members)
                     .ThenInclude(m => m.User)
+                        .ThenInclude(u => u.Tournaments)
                 .Include(c => c.Tournaments)
+                    .ThenInclude(t => t.Players)
                 .Include(c => c.Rulesets)
                 .SingleOrDefault(c => c.Id == clubId);
 

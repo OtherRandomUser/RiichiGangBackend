@@ -95,7 +95,10 @@ namespace RiichiGang.Service
                     winCondition,
                     im.NumberOfAdvancing,
                     im.NumberOfSeries,
-                    im.GamesPerSeries);
+                    im.GamesPerSeries)
+                {
+                    FinalScoreMultiplier = im.FinalScoreMultiplier
+                };
 
                 await _context.AddAsync(bracket);
             }
@@ -211,6 +214,9 @@ namespace RiichiGang.Service
             if (!tournament.Players.Any())
                 throw new ArgumentException("Torneio não conta com nenhum jogador");
 
+            tournament.Status = TournamentStatus.Running;
+            _context.Update(tournament);
+
             var players = tournament.Players.Count();
             var brackets = tournament.Brackets.OrderBy(b => b.Sequence);
 
@@ -256,7 +262,10 @@ namespace RiichiGang.Service
 
             for (var i = 0; i < firstBracket.NumberOfSeries; i++)
             {
-                var shuffled = bracketPlayers.OrderBy(_ => Guid.NewGuid()).AsEnumerable();
+                var shuffled = bracketPlayers
+                    .OrderBy(_ => Guid.NewGuid())
+                    .ToList()
+                    .AsEnumerable();
 
                 while (shuffled.Any())
                 {
@@ -354,23 +363,23 @@ namespace RiichiGang.Service
                     EndScore = p4EndScore,
                     RunningTotal = series.Player4.Score + p4EndScore
                 },
-                PlayedAt = DateTime.Parse((string) json["title"][2]), // might not work
+                PlayedAt = DateTime.Parse((string) json["title"][1]), // might not work
                 LogLink = inputModel.LogLink
             };
 
             await _context.AddAsync(game);
 
             series.Player1.Score += p1EndScore;
-            await _context.AddAsync(series.Player1);
+            _context.Update(series.Player1);
 
             series.Player2.Score += p2EndScore;
-            await _context.AddAsync(series.Player2);
+            _context.Update(series.Player2);
 
             series.Player3.Score += p3EndScore;
-            await _context.AddAsync(series.Player3);
+            _context.Update(series.Player3);
 
             series.Player4.Score += p4EndScore;
-            await _context.AddAsync(series.Player4);
+            _context.Update(series.Player4);
 
             await _context.SaveChangesAsync();
 
@@ -456,6 +465,9 @@ namespace RiichiGang.Service
             if (nextBracket is null)
             {
                 // was the last bracket
+                tournament.Status = TournamentStatus.Finished;
+                _context.Update(tournament);
+                await _context.SaveChangesAsync();
                 return;
             }
 
@@ -649,8 +661,14 @@ namespace RiichiGang.Service
                     }
                 }
 
-                var winner = (int) round[resultOffset][2][0];
-                var loser = (int) round[resultOffset][2][1];
+                var winner = -1;
+                var loser = -1;
+
+                if (round[resultOffset].Children().Count() >= 3)
+                {
+                    winner = (int) round[resultOffset][2][0];
+                    loser = (int) round[resultOffset][2][1];
+                }
 
                 if (winner == playerOffset)
                 {
